@@ -10,6 +10,12 @@ import {
   signOut
 } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js';
 import { getAnalytics } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js';
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc
+} from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAynuva6Z0v4PKXXmr87Je0tW7ioMVbjTY",
@@ -23,6 +29,12 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+let firestore = null;
+try {
+  firestore = getFirestore(app);
+} catch (error) {
+  console.warn('Firebase Firestore unavailable.', error);
+}
 try {
   getAnalytics(app);
 } catch (error) {
@@ -31,6 +43,30 @@ try {
 
 window.firebaseAuth = auth;
 window.firebaseUser = null;
+window.firebaseFirestore = firestore;
+window.firebaseAiSettingsStore = {
+  async load(uid) {
+    if (!firestore) {
+      const error = new Error('Firestore is unavailable');
+      error.code = 'firestore/unavailable';
+      throw error;
+    }
+    const snapshot = await getDoc(doc(firestore, 'users', uid, 'private', 'aiSettings'));
+    return snapshot.exists() ? snapshot.data() : null;
+  },
+  async save(uid, settings) {
+    if (!firestore) {
+      const error = new Error('Firestore is unavailable');
+      error.code = 'firestore/unavailable';
+      throw error;
+    }
+    await setDoc(doc(firestore, 'users', uid, 'private', 'aiSettings'), {
+      geminiKey: String(settings.geminiKey || ''),
+      youtubeKey: String(settings.youtubeKey || ''),
+      language: String(settings.language || 'Hinglish')
+    }, { merge: true });
+  }
+};
 
 const $ = id => document.getElementById(id);
 const setMessage = message => {
@@ -71,6 +107,7 @@ function showApp(user) {
       avatar.textContent = (user?.displayName || user?.email || 'U').charAt(0).toUpperCase();
     }
   }
+  window.dispatchEvent(new CustomEvent('qmt-auth-state', { detail: user }));
 }
 
 function showGate() {
@@ -82,6 +119,7 @@ function showGate() {
   }
   const userBox = $('authUser');
   if (userBox) userBox.classList.add('hidden');
+  window.dispatchEvent(new CustomEvent('qmt-auth-state', { detail: null }));
 }
 
 async function runAuth(action) {

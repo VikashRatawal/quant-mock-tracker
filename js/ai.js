@@ -1,4 +1,5 @@
 const AI_STORAGE_KEY = 'qmt_ai_settings_v1';
+const AI_LANGUAGE_KEY = 'qmt_ai_language_v1';
 const GEMINI_MODEL = 'gemini-2.0-flash';
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/' + GEMINI_MODEL + ':generateContent';
 const PDFJS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
@@ -6,24 +7,111 @@ const PDFJS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.mi
 const AI = {
   settings: loadSettings(),
   preview: [],
-  busy: new Set()
+  busy: new Set(),
+  syncedUid: '',
+  syncPromise: null
 };
 
 function loadSettings() {
+  const fallback = { geminiKey: '', youtubeKey: '', language: localStorage.getItem(AI_LANGUAGE_KEY) || 'Hinglish' };
   try {
-    return Object.assign({ geminiKey: '', youtubeKey: '', language: 'Hinglish' },
-      JSON.parse(localStorage.getItem(AI_STORAGE_KEY) || '{}'));
+    return Object.assign(fallback, JSON.parse(localStorage.getItem(AI_STORAGE_KEY) || '{}'));
   } catch (error) {
-    return { geminiKey: '', youtubeKey: '', language: 'Hinglish' };
+    return fallback;
   }
 }
 
-function saveSettings() {
+function legacySettings() {
+  try {
+    return JSON.parse(localStorage.getItem(AI_STORAGE_KEY) || 'null') || {};
+  } catch (error) {
+    return {};
+  }
+}
+
+function normalizedSettings(settings = {}) {
+  return {
+    geminiKey: String(settings.geminiKey || ''),
+    youtubeKey: String(settings.youtubeKey || ''),
+    language: ['Hindi', 'English', 'Hinglish'].includes(settings.language) ? settings.language : 'Hinglish'
+  };
+}
+
+function populateSettings() {
+  const gemini = document.getElementById('aiGeminiKey');
+  const youtube = document.getElementById('aiYoutubeKey');
+  const language = document.getElementById('aiLanguage');
+  if (gemini) gemini.value = AI.settings.geminiKey || '';
+  if (youtube) youtube.value = AI.settings.youtubeKey || '';
+  if (language) language.value = AI.settings.language || 'Hinglish';
+}
+
+function firestoreToast(error) {
+  console.warn('Firestore AI settings:', error);
+  toast('⚠️ Firestore enable/rules check karein');
+}
+
+async function syncSettingsForUser(user) {
+  const legacy = legacySettings();
+  const hasLegacy = Object.keys(legacy).length > 0;
+  const localCandidate = normalizedSettings(Object.assign({}, AI.settings, legacy));
+  const store = window.firebaseAiSettingsStore;
+  try {
+    const remote = await store.load(user.uid);
+    if (remote) {
+      AI.settings = normalizedSettings(remote);
+    } else {
+      AI.settings = localCandidate;
+      await store.save(user.uid, AI.settings);
+    }
+    localStorage.removeItem(AI_STORAGE_KEY);
+    localStorage.setItem(AI_LANGUAGE_KEY, AI.settings.language);
+    populateSettings();
+  } catch (error) {
+    AI.settings = localCandidate;
+    localStorage.removeItem(AI_STORAGE_KEY);
+    localStorage.setItem(AI_LANGUAGE_KEY, AI.settings.language);
+    populateSettings();
+    firestoreToast(error);
+  }
+}
+
+function handleAuthState(user) {
+  if (!user) {
+    AI.syncedUid = '';
+    AI.settings = normalizedSettings({ language: localStorage.getItem(AI_LANGUAGE_KEY) || AI.settings.language });
+    populateSettings();
+    return;
+  }
+  if (AI.syncedUid === user.uid || AI.syncPromise) return;
+  AI.syncPromise = syncSettingsForUser(user)
+    .finally(() => {
+      AI.syncedUid = user.uid;
+      AI.syncPromise = null;
+    });
+}
+
+async function saveSettings() {
   AI.settings.geminiKey = document.getElementById('aiGeminiKey')?.value.trim() || '';
   AI.settings.youtubeKey = document.getElementById('aiYoutubeKey')?.value.trim() || '';
   AI.settings.language = document.getElementById('aiLanguage')?.value || 'Hinglish';
-  localStorage.setItem(AI_STORAGE_KEY, JSON.stringify(AI.settings));
-  toast('✅ AI settings save ho gayi');
+  localStorage.setItem(AI_LANGUAGE_KEY, AI.settings.language);
+  localStorage.removeItem(AI_STORAGE_KEY);
+  const user = window.firebaseUser;
+  if (!user) {
+    toast('⚠️ Sign in karke AI settings save karein');
+    return;
+  }
+  if (!window.firebaseAiSettingsStore) {
+    firestoreToast(new Error('Firestore settings store unavailable'));
+    return;
+  }
+  try {
+    await window.firebaseAiSettingsStore.save(user.uid, AI.settings);
+    toast('✅ AI settings Firebase account me save ho gayi');
+  } catch (error) {
+    firestoreToast(error);
+  }
 }
 
 function toast(message) {
@@ -57,7 +145,6 @@ function state() {
 }
 
 function requireGeminiKey() {
-  AI.settings = loadSettings();
   if (!AI.settings.geminiKey) {
     toast('⚠️ API key set karein');
     openModal('AI Settings', '<div class="ai-response">Data tab me Gemini API key save karein, phir dobara try karein.</div>');
@@ -67,7 +154,6 @@ function requireGeminiKey() {
 }
 
 function requireYoutubeKey() {
-  AI.settings = loadSettings();
   if (!AI.settings.youtubeKey) {
     toast('⚠️ API key set karein');
     return '';
@@ -217,7 +303,7 @@ function addSettingsCard() {
   card.className = 'card ai-card';
   card.innerHTML = `<div class="card-body">
     <div class="ai-title">🤖 AI Settings</div>
-    <div class="ai-sub">Keys sirf isi browser ke localStorage me save hongi. Firebase/Firestore par nahi bheji jaati.</div>
+    <div class="ai-sub">Keys ab aapke Firebase account (Firestore) me save hoti hain, sirf aapke login se access.</div>
     <div class="ai-grid">
       <label><span class="lbl">Gemini API key</span><input id="aiGeminiKey" class="inp" type="password" autocomplete="off" placeholder="AIza..."></label>
       <label><span class="lbl">YouTube Data API key</span><input id="aiYoutubeKey" class="inp" type="password" autocomplete="off" placeholder="AIza..."></label>
@@ -226,9 +312,7 @@ function addSettingsCard() {
     <button class="ai-btn" id="aiSaveSettings" type="button" style="margin-top:12px">💾 Save AI Settings</button>
   </div>`;
   tab.firstElementChild?.prepend(card);
-  document.getElementById('aiGeminiKey').value = AI.settings.geminiKey || '';
-  document.getElementById('aiYoutubeKey').value = AI.settings.youtubeKey || '';
-  document.getElementById('aiLanguage').value = AI.settings.language || 'Hinglish';
+  populateSettings();
   document.getElementById('aiSaveSettings').addEventListener('click', saveSettings);
 }
 
@@ -496,7 +580,6 @@ async function findVideos(no, button) {
   if (!question) return;
   setBusy(button, true, '⏳ Finding...');
   try {
-    AI.settings = loadSettings();
     const concept = [question.chapter, question.topic, question.subtopic].filter(Boolean).join(' ');
     const query = `${concept} SSC ${AI.settings.language}`;
     const searchUrl = new URL('https://www.googleapis.com/youtube/v3/search');
@@ -630,6 +713,8 @@ function initAI() {
   addPlannerCard();
   bindActions();
   observeDynamicViews();
+  window.addEventListener('qmt-auth-state', event => handleAuthState(event.detail));
+  handleAuthState(window.firebaseUser);
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initAI);
