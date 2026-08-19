@@ -69,7 +69,8 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   if (!isSameOrigin(url) || event.request.method !== 'GET') return;
-  if (url.pathname === INDEX_PATH) {
+  if (url.pathname === INDEX_PATH || url.pathname === APP_ROOT ||
+      url.pathname.startsWith(`${APP_ROOT}js/`)) {
     event.respondWith(networkFirst(event.request));
   } else if (isStaticAsset(url)) {
     event.respondWith(cacheFirst(event.request));
