@@ -41,6 +41,8 @@ const friendlyError = error => {
   const code = String(error?.code || '');
   const messages = {
     'auth/invalid-credential': 'Email ya password check karein.',
+    'auth/operation-not-allowed': 'Firebase Console me yeh sign-in method enable karein (Authentication → Sign-in method).',
+    'auth/unauthorized-domain': 'Firebase Console me is domain ko authorized domains me add karein.',
     'auth/invalid-email': 'Valid email address daalein.',
     'auth/email-already-in-use': 'Is email se account already hai.',
     'auth/weak-password': 'Password kam se kam 6 characters ka ho.',
