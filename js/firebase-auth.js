@@ -29,11 +29,51 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-let firestore = null;
+const FIRESTORE_DATABASE_IDS = ['(default)', 'default'];
+let firestoreCandidates = [];
 try {
-  firestore = getFirestore(app);
+  firestoreCandidates = FIRESTORE_DATABASE_IDS.map(id => getFirestore(app, id));
 } catch (error) {
   console.warn('Firebase Firestore unavailable.', error);
+}
+let firestore = firestoreCandidates[0] || null;
+
+function isDatabaseNotFound(error) {
+  const code = String(error?.code || '');
+  const message = String(error?.message || '');
+  return code === 'not-found' || message.includes('not found') || message.includes('NOT_FOUND');
+}
+
+function withTimeout(promise, ms) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      const error = new Error('Firestore request timed out');
+      error.code = 'not-found';
+      reject(error);
+    }, ms);
+    promise.then(
+      value => { clearTimeout(timer); resolve(value); },
+      error => { clearTimeout(timer); reject(error); }
+    );
+  });
+}
+
+async function withFirestoreFallback(operation) {
+  let lastError = null;
+  const candidates = firestore && firestore !== firestoreCandidates[0]
+    ? [firestore, ...firestoreCandidates.filter(db => db !== firestore)]
+    : firestoreCandidates;
+  for (const db of candidates) {
+    try {
+      const result = await withTimeout(operation(db), 8000);
+      firestore = db;
+      return result;
+    } catch (error) {
+      lastError = error;
+      if (!isDatabaseNotFound(error)) throw error;
+    }
+  }
+  throw lastError || new Error('Firestore is unavailable');
 }
 try {
   getAnalytics(app);
@@ -46,25 +86,28 @@ window.firebaseUser = null;
 window.firebaseFirestore = firestore;
 window.firebaseAiSettingsStore = {
   async load(uid) {
-    if (!firestore) {
+    if (!firestoreCandidates.length) {
       const error = new Error('Firestore is unavailable');
       error.code = 'firestore/unavailable';
       throw error;
     }
-    const snapshot = await getDoc(doc(firestore, 'users', uid, 'private', 'aiSettings'));
-    return snapshot.exists() ? snapshot.data() : null;
+    return withFirestoreFallback(async db => {
+      const snapshot = await getDoc(doc(db, 'users', uid, 'private', 'aiSettings'));
+      return snapshot.exists() ? snapshot.data() : null;
+    });
   },
   async save(uid, settings) {
-    if (!firestore) {
+    if (!firestoreCandidates.length) {
       const error = new Error('Firestore is unavailable');
       error.code = 'firestore/unavailable';
       throw error;
     }
-    await setDoc(doc(firestore, 'users', uid, 'private', 'aiSettings'), {
-      geminiKey: String(settings.geminiKey || ''),
-      youtubeKey: String(settings.youtubeKey || ''),
-      language: String(settings.language || 'Hinglish')
-    }, { merge: true });
+    return withFirestoreFallback(db =>
+      setDoc(doc(db, 'users', uid, 'private', 'aiSettings'), {
+        geminiKey: String(settings.geminiKey || ''),
+        youtubeKey: String(settings.youtubeKey || ''),
+        language: String(settings.language || 'Hinglish')
+      }, { merge: true }));
   }
 };
 
