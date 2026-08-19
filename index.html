@@ -2442,6 +2442,67 @@ body.dark .season-flag.alert{background:#451a1a;color:#fca5a5}body.dark .season-
 .season-insights{grid-template-columns:repeat(auto-fit,minmax(210px,1fr));align-items:stretch}.trend-verdict{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(220px,1fr) auto;align-items:center;gap:15px;padding:17px;border:1px solid var(--line);border-left:6px solid var(--trend,#64748b);border-radius:14px;background:linear-gradient(115deg,var(--trend-bg,#f8fafc),var(--surface,var(--card)));overflow:hidden}.trend-verdict.improving{--trend:#16a34a;--trend-bg:#ecfdf5}.trend-verdict.declining{--trend:#dc2626;--trend-bg:#fef2f2}.trend-verdict.stable{--trend:#2563eb;--trend-bg:#eff6ff}.trend-verdict.mixed{--trend:#d97706;--trend-bg:#fffbeb}.trend-verdict.baseline{--trend:#7c3aed;--trend-bg:#f5f3ff}.dark .trend-verdict{--trend-bg:#111827}.trend-verdict-icon{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:var(--trend);color:#fff;font-size:28px;font-weight:950;box-shadow:0 8px 18px color-mix(in srgb,var(--trend) 28%,transparent)}.trend-verdict-copy span{font-size:8px;letter-spacing:.13em;text-transform:uppercase;font-weight:950;color:var(--trend)}.trend-verdict-copy h3{font-size:18px;line-height:1.2;margin:3px 0;color:var(--tx,var(--text))}.trend-verdict-copy p{font-size:10px;color:var(--tx-2,var(--muted));margin:0}.trend-verdict-metrics{display:flex;gap:7px}.trend-verdict-metrics>div{min-width:95px;padding:9px;border-radius:9px;background:var(--surface,var(--card));border:1px solid var(--line);text-align:center}.trend-verdict-metrics small,.trend-verdict-metrics b{display:block}.trend-verdict-metrics small{font-size:7px;color:var(--tx-3,var(--muted));margin-bottom:3px}.trend-verdict-metrics b{font-size:11px}.trend-verdict .up,.trend-movement-card.up b{color:#16a34a}.trend-verdict .down,.trend-movement-card.down b{color:#dc2626}.trend-verdict .flat,.trend-movement-card.flat b{color:#2563eb}.trend-movement-card,.trend-list-card{padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2,var(--soft))}.trend-movement-card{border-top:3px solid var(--move,#2563eb)}.trend-movement-card.up{--move:#16a34a}.trend-movement-card.down{--move:#dc2626}.trend-movement-card.flat{--move:#2563eb}.trend-card-top{display:flex;align-items:center;gap:8px}.trend-card-icon{display:grid;place-items:center;width:31px;height:31px;border-radius:9px;background:color-mix(in srgb,var(--move) 12%,var(--surface));color:var(--move);font-weight:950}.trend-card-top small,.trend-card-top b{display:block}.trend-card-top small{font-size:8px;color:var(--tx-3,var(--muted));margin-bottom:2px}.trend-card-top b{font-size:11px}.trend-movement-card p{font-size:9px;color:var(--tx-2,var(--muted));margin:9px 0}.trend-meter{height:5px;border-radius:99px;background:var(--line);overflow:hidden}.trend-meter i{display:block;height:100%;border-radius:inherit;background:var(--move)}.trend-list-card h4{display:flex;justify-content:space-between;gap:7px;margin:0 0 8px;font-size:11px}.trend-list-card h4 span{font-size:7px;color:var(--tx-3,var(--muted));padding:3px 6px;border-radius:999px;background:var(--surface,var(--card))}.trend-list-card ul{margin:0;padding:0;list-style:none;display:grid;gap:6px}.trend-list-card li{padding:7px 8px;border-radius:8px;background:var(--surface,var(--card));border:1px solid var(--line);font-size:9px;font-weight:800}.trend-list-card li small{display:block;margin-top:3px;color:var(--tx-3,var(--muted));font-size:7px;font-weight:600}.trend-list-card.focus{border-top:3px solid #dc2626}.trend-list-card.strong{border-top:3px solid #d97706}
 @media(max-width:760px){.trend-verdict{grid-template-columns:auto 1fr}.trend-verdict-metrics{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr)}.trend-verdict-metrics>div{min-width:0}.trend-verdict-copy h3{font-size:15px}}
 
+/* ═══ FIREBASE AUTH + AI ADDITIONS ═══ */
+#authGate{position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;padding:18px;background:linear-gradient(135deg,#eef2ff,#f8fafc);overflow:auto}
+body.dark #authGate{background:linear-gradient(135deg,#0f172a,#1e293b)}
+#authGate.auth-hidden{display:none}
+.auth-card{width:min(430px,100%);background:#fff;border-radius:20px;padding:24px;box-shadow:0 20px 70px rgba(15,23,42,.24)}
+body.dark .auth-card{background:#1e293b;color:#e2e8f0}
+.auth-brand{text-align:center;font-size:25px;font-weight:950;color:#4f46e5;margin-bottom:5px}
+.auth-sub{text-align:center;color:#64748b;font-size:12px;margin-bottom:20px}
+body.dark .auth-sub{color:#94a3b8}
+.auth-card .inp{margin-bottom:10px}
+.auth-actions{display:flex;gap:8px;margin-top:4px}
+.auth-actions button,.auth-google,.auth-reset{border-radius:10px;padding:11px 12px;font:700 13px inherit;cursor:pointer}
+.auth-actions button{flex:1;border:0;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff}
+.auth-actions button.secondary{background:#eef2ff;color:#4f46e5}
+body.dark .auth-actions button.secondary{background:#334155;color:#c4b5fd}
+.auth-google{width:100%;border:1px solid #e2e8f0;background:#fff;color:#334155;margin-top:10px}
+body.dark .auth-google{background:#0f172a;border-color:#475569;color:#e2e8f0}
+.auth-reset{display:block;border:0;background:none;color:#6366f1;margin:8px auto 0;font-size:12px}
+.auth-msg{text-align:center;min-height:18px;color:#ef4444;font-size:11px;font-weight:700;margin-top:8px}
+#authUser{display:flex;align-items:center;gap:8px;max-width:230px}
+#authAvatar{width:30px;height:30px;border-radius:50%;object-fit:cover;background:#e0e7ff;color:#4f46e5;display:grid;place-items:center;font-size:12px;font-weight:900}
+#authEmail{max-width:135px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#64748b;font-weight:700}
+body.dark #authEmail{color:#cbd5e1}
+#authLogout{border:1px solid #fecaca;background:#fff1f2;color:#dc2626;border-radius:9px;padding:7px 9px;font-size:11px;font-weight:800;cursor:pointer}
+body.dark #authLogout{background:#450a0a;border-color:#7f1d1d;color:#fca5a5}
+.ai-card{border-top:3px solid #8b5cf6}
+.ai-title{font-size:15px;font-weight:900;color:#7c3aed}
+body.dark .ai-title{color:#c4b5fd}
+.ai-sub{font-size:11px;color:#94a3b8;margin:3px 0 12px}
+.ai-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.ai-btn{border:0;border-radius:10px;padding:10px 12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:12px;font-weight:800;cursor:pointer}
+.ai-btn.secondary{background:#ede9fe;color:#6d28d9}
+body.dark .ai-btn.secondary{background:#312e81;color:#ddd6fe}
+.ai-btn:disabled{opacity:.6;cursor:wait}
+.ai-preview{margin-top:12px;border:1px solid #ddd6fe;border-radius:10px;overflow:auto;max-height:360px}
+body.dark .ai-preview{border-color:#4c1d95}
+.ai-preview table{width:100%;border-collapse:collapse;font-size:11px}
+.ai-preview th,.ai-preview td{padding:8px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:top}
+body.dark .ai-preview th,body.dark .ai-preview td{border-bottom-color:#334155}
+.ai-preview th{background:#f5f3ff;color:#6d28d9}
+body.dark .ai-preview th{background:#312e81;color:#ddd6fe}
+.ai-modal{position:fixed;inset:0;z-index:4500;background:rgba(15,23,42,.65);display:none;align-items:center;justify-content:center;padding:16px}
+.ai-modal.open{display:flex}
+.ai-modal-card{background:#fff;color:#1e293b;border-radius:16px;max-width:720px;width:100%;max-height:88vh;overflow:auto;padding:20px;box-shadow:0 20px 70px rgba(0,0,0,.35)}
+body.dark .ai-modal-card{background:#1e293b;color:#e2e8f0}
+.ai-modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.ai-modal-head h3{font-size:16px}
+.ai-close{border:0;background:none;color:#64748b;font-size:20px;cursor:pointer}
+.ai-response{font-size:13px;line-height:1.7;color:#334155;white-space:normal}
+body.dark .ai-response{color:#cbd5e1}
+.ai-response h1,.ai-response h2,.ai-response h3{margin:12px 0 5px;color:#4f46e5}
+body.dark .ai-response h1,body.dark .ai-response h2,body.dark .ai-response h3{color:#c4b5fd}
+.ai-response ul,.ai-response ol{padding-left:20px;margin:6px 0}
+.ai-preset-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+.ai-preset{border:1px solid #c4b5fd;background:#f5f3ff;color:#6d28d9;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800;cursor:pointer}
+body.dark .ai-preset{background:#312e81;color:#ddd6fe;border-color:#6d28d9}
+.ai-loading{color:#7c3aed;font-weight:800;padding:16px;text-align:center}
+.ai-video-meta{font-size:10px;color:#64748b}
+body.dark .ai-video-meta{color:#94a3b8}
+@media(max-width:640px){#authUser{max-width:145px}#authEmail{display:none}.auth-card{padding:20px}.ai-modal-card{padding:16px}}
+
 </style>
 </head>
 <body>
@@ -2451,6 +2512,10 @@ body.dark .season-flag.alert{background:#451a1a;color:#fca5a5}body.dark .season-
   <div class="top-bar-content">
     <h1>🧮 Quant Mock Tracker</h1>
     <div class="top-bar-right">
+      <div id="authUser" class="hidden" aria-label="Signed-in user">
+        <span id="authAvatar">U</span><span id="authEmail"></span>
+        <button id="authLogout" type="button">Logout</button>
+      </div>
       <button class="dark-toggle" onclick="toggleDark()" title="Toggle Dark Mode" id="darkBtn">🌙</button>
     </div>
   </div>
@@ -3289,6 +3354,25 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
 
 <!-- Toast -->
 <div id="toast"></div>
+
+<!-- Firebase login gate: the existing local app remains unchanged behind it. -->
+<div id="authGate" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="auth-card">
+    <div class="auth-brand" id="authTitle">🧮 Quant Mock Tracker</div>
+    <div class="auth-sub">Apne mock data aur AI tools access karne ke liye sign in karein</div>
+    <form id="authForm">
+      <input id="authEmailInput" class="inp" type="email" autocomplete="email" placeholder="Email address" required>
+      <input id="authPasswordInput" class="inp" type="password" autocomplete="current-password" placeholder="Password (6+ characters)" required>
+      <div class="auth-actions">
+        <button type="submit" data-auth-mode="signin">Sign in</button>
+        <button type="button" class="secondary" id="authSignup">Sign up</button>
+      </div>
+    </form>
+    <button type="button" class="auth-google" id="authGoogle">🌐 Google se sign in</button>
+    <button type="button" class="auth-reset" id="authReset">Password reset link bhejein</button>
+    <div class="auth-msg" id="authMsg" role="status"></div>
+  </div>
+</div>
 
 <!-- Edit Question Modal -->
 <div id="editModal" class="hidden" style="position:fixed;inset:0;background:rgba(15,23,42,.6);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)closeEditQ()">
@@ -9078,4 +9162,29 @@ else rvBindEvents();
   <button class="sheet-b" data-dock="data"      onclick="dockGo('data')"><span class="di">💾</span>Data</button>
 </div>
 <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2d110ab0b9a0bc3',t:'MTc4NzA1NzY0NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2d90d989b62b117',t:'MTc4NzE0MTQwNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>
+/* Additive bridge for ES modules. The original state, persistence and render
+   functions stay in their existing classic script scope. */
+window.QMT = {
+  getState: () => S,
+  refresh: () => {
+    if (typeof refreshCategoryFilter === 'function') refreshCategoryFilter();
+    if (typeof refreshChapterFilter === 'function') refreshChapterFilter();
+    if (typeof refreshReasonFilter === 'function') refreshReasonFilter();
+    if (typeof refreshTagFilter === 'function') refreshTagFilter();
+    if (typeof renderTable === 'function') renderTable();
+    if (typeof renderAnalytics === 'function') renderAnalytics();
+    if (typeof renderRevision === 'function') renderRevision();
+    if (typeof saveToStorage === 'function') saveToStorage();
+  },
+  importQuestions: questions => {
+    const input = document.getElementById('rv2uniInput');
+    if (!input || typeof rvUniSave !== 'function') throw new Error('Existing import path unavailable');
+    input.value = JSON.stringify(questions);
+    rvUniSave();
+  }
+};
+</script>
+<script type="module" src="./js/firebase-auth.js"></script>
+<script type="module" src="./js/ai.js"></script>
 </html>
