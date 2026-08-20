@@ -11,7 +11,8 @@
     { id: 'revision', icon: '📚', label: 'Revision' },
     { id: 'mocks', icon: '🎯', label: 'Play Mocks' },
     { id: 'pattern', icon: '📊', label: 'Season Pattern' },
-    { id: 'data', icon: '💾', label: 'Data / Backup' }
+    { id: 'data', icon: '💾', label: 'Data / Backup' },
+    { id: 'settings', icon: '⚙️', label: 'Settings' }
   ];
 
   function state() {
@@ -461,7 +462,7 @@
         if (help) help.classList.toggle('open');
         return;
       }
-      if (/^[1-7]$/.test(event.key) && !event.altKey) {
+      if (/^[1-8]$/.test(event.key) && !event.altKey) {
         const tab = TABS[Number(event.key) - 1];
         if (tab && typeof switchTab === 'function') switchTab(tab.id);
       }

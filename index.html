@@ -2381,8 +2381,8 @@ body.dark .top-bar::after{background:linear-gradient(180deg,rgba(0,0,0,.22),tran
 /* ═══ V3: cleaner question-table column coding ═══ */
 #entryQuestionsPane .dtable tbody td{background-clip:padding-box;transition:background .16s ease;}
 #entryQuestionsPane .dtable tbody td:nth-child(1){background:rgba(99,102,241,.08);border-left:3px solid rgba(99,102,241,.48);}
-#entryQuestionsPane .dtable tbody td:nth-child(2){background:rgba(59,130,246,.055);}
-#entryQuestionsPane .dtable tbody td:nth-child(3){background:rgba(16,185,129,.055);}
+#entryQuestionsPane .dtable tbody td:nth-child(2){background:rgba(16,185,129,.055);}
+#entryQuestionsPane .dtable tbody td:nth-child(3){background:rgba(59,130,246,.055);}
 #entryQuestionsPane .dtable tbody td:nth-child(4){background:rgba(14,165,233,.045);}
 #entryQuestionsPane .dtable tbody td:nth-child(5){background:rgba(139,92,246,.045);}
 #entryQuestionsPane .dtable tbody td:nth-child(6){background:rgba(168,85,247,.035);}
@@ -2395,8 +2395,8 @@ body.dark .top-bar::after{background:linear-gradient(180deg,rgba(0,0,0,.22),tran
 #entryQuestionsPane .dtable tbody td:nth-child(13){background:rgba(100,116,139,.05);}
 #entryQuestionsPane .drow:hover td{filter:brightness(1.035);}
 body.dark #entryQuestionsPane .dtable tbody td:nth-child(1){background:rgba(99,102,241,.13);}
-body.dark #entryQuestionsPane .dtable tbody td:nth-child(2){background:rgba(59,130,246,.085);}
-body.dark #entryQuestionsPane .dtable tbody td:nth-child(3){background:rgba(16,185,129,.075);}
+body.dark #entryQuestionsPane .dtable tbody td:nth-child(2){background:rgba(16,185,129,.075);}
+body.dark #entryQuestionsPane .dtable tbody td:nth-child(3){background:rgba(59,130,246,.085);}
 body.dark #entryQuestionsPane .dtable tbody td:nth-child(4){background:rgba(14,165,233,.07);}
 body.dark #entryQuestionsPane .dtable tbody td:nth-child(5){background:rgba(139,92,246,.07);}
 body.dark #entryQuestionsPane .dtable tbody td:nth-child(6){background:rgba(168,85,247,.055);}
@@ -2406,6 +2406,27 @@ body.dark #entryQuestionsPane .dtable tbody td:nth-child(9){background:rgba(249,
 body.dark #entryQuestionsPane .dtable tbody td:nth-child(10){background:rgba(236,72,153,.065);}
 body.dark #entryQuestionsPane .dtable tbody td:nth-child(11){background:rgba(244,63,94,.055);}
 body.dark #entryQuestionsPane .dtable tbody td:nth-child(12){background:rgba(20,184,166,.06);}
+
+/* Questions table: fixed columns + wrapping so lambi text wrap ho aur column width na badhe —
+   poori table ek hi screen me fit (mobile par horizontal scroll milta hai). */
+#entryQuestionsPane .dtable{table-layout:fixed;min-width:960px;width:100%;}
+#entryQuestionsPane .dtable th,
+#entryQuestionsPane .dtable td{white-space:normal;overflow-wrap:anywhere;word-break:break-word;}
+#entryQuestionsPane .dtable th:nth-child(1),#entryQuestionsPane .dtable td:nth-child(1){width:4%;}
+#entryQuestionsPane .dtable th:nth-child(2),#entryQuestionsPane .dtable td:nth-child(2){width:8%;}
+#entryQuestionsPane .dtable th:nth-child(3),#entryQuestionsPane .dtable td:nth-child(3){width:10%;}
+#entryQuestionsPane .dtable th:nth-child(4),#entryQuestionsPane .dtable td:nth-child(4){width:11%;}
+#entryQuestionsPane .dtable th:nth-child(5),#entryQuestionsPane .dtable td:nth-child(5){width:12%;}
+#entryQuestionsPane .dtable th:nth-child(6),#entryQuestionsPane .dtable td:nth-child(6){width:9%;}
+#entryQuestionsPane .dtable th:nth-child(7),#entryQuestionsPane .dtable td:nth-child(7){width:6%;}
+#entryQuestionsPane .dtable th:nth-child(8),#entryQuestionsPane .dtable td:nth-child(8){width:7%;}
+#entryQuestionsPane .dtable th:nth-child(9),#entryQuestionsPane .dtable td:nth-child(9){width:5%;}
+#entryQuestionsPane .dtable th:nth-child(10),#entryQuestionsPane .dtable td:nth-child(10){width:6%;}
+#entryQuestionsPane .dtable th:nth-child(11),#entryQuestionsPane .dtable td:nth-child(11){width:11%;}
+#entryQuestionsPane .dtable th:nth-child(12),#entryQuestionsPane .dtable td:nth-child(12){width:6%;}
+#entryQuestionsPane .dtable th:nth-child(13),#entryQuestionsPane .dtable td:nth-child(13){width:5%;}
+#entryQuestionsPane .dtable .reason-cell{white-space:normal;overflow-wrap:anywhere;word-break:break-word;}
+#entryQuestionsPane .dtable .dpill{white-space:normal;}
 
 /* Difficulty overview: high-contrast summary, especially in dark mode */
 .op-overall .diff-summary-card{margin-top:3px;padding:13px 10px;border-radius:12px;
@@ -2617,6 +2638,7 @@ body.dark #helpSheet kbd{background:#334155;}
     <button class="tab-btn" data-tab="mocks" onclick="switchTab('mocks')">📝 Mocks</button>
     <button class="tab-btn" data-tab="pattern" onclick="switchTab('pattern')">📊 Season</button>
     <button class="tab-btn" data-tab="data" onclick="switchTab('data')">💾 Data</button>
+    <button class="tab-btn" data-tab="settings" onclick="switchTab('settings')">⚙️ Settings</button>
   </div>
 </div>
 
@@ -2953,8 +2975,8 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
           <thead>
             <tr>
               <th>Q#</th>
-              <th>Category</th>
               <th>Status</th>
+              <th>Category</th>
               <th>Chapter</th>
               <th>Topic</th>
               <th>Sub</th>
@@ -3438,6 +3460,35 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
   </div>
 </div>
 
+<!-- ═══════════════ TAB: SETTINGS ═══════════════ -->
+<div id="tab-settings" class="hidden fade-up">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;">
+    <!-- 🤖 AI Settings card yahan ai.js (addSettingsCard) inject karta hai -->
+    <div class="card">
+      <div class="card-body">
+        <div class="sect-title">📝 Mock Defaults</div>
+        <div class="ai-sub">Naye mock ke liye default setup — import me marks/time na ho to ye values use hoti hain.</div>
+        <div class="ai-grid">
+          <label><span class="lbl">Total Questions</span><input id="mdTotalQ" class="inp" type="number" min="1" step="1"/></label>
+          <label><span class="lbl">Total Time (min)</span><input id="mdTotalTime" class="inp" type="number" min="1" step="0.5"/></label>
+          <label><span class="lbl">Marks / Correct</span><input id="mdMarksCorrect" class="inp" type="number" min="0" step="0.25"/></label>
+          <label><span class="lbl">Marks / Wrong (−)</span><input id="mdMarksWrong" class="inp" type="number" min="0" step="0.25"/></label>
+          <label><span class="lbl">Subject</span><input id="mdSubject" class="inp" type="text"/></label>
+          <label><span class="lbl">Default Exam Name</span><input id="mdExamName" class="inp" type="text" placeholder="SSC CGL"/></label>
+        </div>
+        <button class="ai-btn" style="margin-top:12px" onclick="saveMockDefaults()">💾 Save Mock Defaults</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="sect-title">🌓 Dark Mode</div>
+        <div class="ai-sub">Light / dark theme toggle karein — ⌘K command palette me bhi available hai.</div>
+        <button class="ai-btn" style="margin-top:6px" onclick="toggleDark()">🌓 Toggle Dark Mode</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </div><!-- /main -->
 
 <div id="installBanner" class="qmt-banner" role="status">
@@ -3452,13 +3503,13 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
   <div class="cmdk-card" role="dialog" aria-label="Command palette">
     <input id="cmdkInput" type="search" placeholder="Tabs, mocks, actions…  (Ctrl/⌘ K)" autocomplete="off"/>
     <div id="cmdkList"></div>
-    <div class="cmdk-hint">↑↓ move · Enter open · Esc close · 1–7 tabs · / search</div>
+    <div class="cmdk-hint">↑↓ move · Enter open · Esc close · 1–8 tabs · / search</div>
   </div>
 </div>
 <div id="helpSheet">
   <h3>Keyboard shortcuts</h3>
   <p><span>Command palette</span><kbd>Ctrl</kbd> <kbd>K</kbd></p>
-  <p><span>Tabs Home → Data</span><kbd>1</kbd>–<kbd>7</kbd></p>
+  <p><span>Tabs Home → Settings</span><kbd>1</kbd>–<kbd>8</kbd></p>
   <p><span>Search mocks</span><kbd>/</kbd></p>
   <p><span>This help</span><kbd>?</kbd></p>
 </div>
@@ -3558,8 +3609,65 @@ function autoCategory(chapter){
   return 'Arithmetic';
 }
 
+// ═══════════════════════════════════════════
+// MOCK DEFAULTS (Settings tab se editable)
+// ═══════════════════════════════════════════
+const MOCK_DEFAULTS_KEY = 'qmt_mock_defaults_v1';
+function baseDefaultSetup(){
+  return {date:'', examName:'', year:2026, name:'', subject:'Quantitative Aptitude', totalQ:25, totalTime:15, percentile:null, avgScore:null, cutoff:null, marksCorrect:2, marksWrong:0.5};
+}
+function numOrDef(value, fallback){
+  if(value === '' || value == null) return fallback;
+  const n = parseFloat(value);
+  return isNaN(n) ? fallback : n;
+}
+function loadMockDefaults(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(MOCK_DEFAULTS_KEY) || 'null');
+    if(saved && typeof saved === 'object') return saved;
+  }catch(e){}
+  return {};
+}
+function defaultSetup(){
+  const d = loadMockDefaults();
+  const base = baseDefaultSetup();
+  return {
+    ...base,
+    totalQ: numOrDef(d.totalQ, base.totalQ),
+    totalTime: numOrDef(d.totalTime, base.totalTime),
+    marksCorrect: numOrDef(d.marksCorrect, base.marksCorrect),
+    marksWrong: numOrDef(d.marksWrong, base.marksWrong),
+    subject: String(d.subject || base.subject),
+    examName: String(d.examName || base.examName),
+    date: '', name: '', percentile: null, avgScore: null, cutoff: null
+  };
+}
+function populateMockDefaults(){
+  const d = defaultSetup();
+  const set = (id, v) => { const el = g(id); if(el) el.value = v; };
+  set('mdTotalQ', d.totalQ);
+  set('mdTotalTime', d.totalTime);
+  set('mdMarksCorrect', d.marksCorrect);
+  set('mdMarksWrong', d.marksWrong);
+  set('mdSubject', d.subject);
+  set('mdExamName', d.examName);
+}
+function saveMockDefaults(){
+  const v = id => { const el = g(id); return el ? el.value.trim() : ''; };
+  const defaults = {
+    totalQ: numOrDef(v('mdTotalQ'), 25),
+    totalTime: numOrDef(v('mdTotalTime'), 15),
+    marksCorrect: numOrDef(v('mdMarksCorrect'), 2),
+    marksWrong: numOrDef(v('mdMarksWrong'), 0.5),
+    subject: v('mdSubject') || 'Quantitative Aptitude',
+    examName: v('mdExamName') || ''
+  };
+  try{ localStorage.setItem(MOCK_DEFAULTS_KEY, JSON.stringify(defaults)); }catch(e){}
+  showToast('✅ Mock defaults save ho gaye');
+}
+
 let S = {
-  setup: {date:'', examName:'', year:2026, name:'', subject:'Quantitative Aptitude', totalQ:25, totalTime:15, percentile:null, avgScore:null, cutoff:null, marksCorrect:2, marksWrong:0.5},
+  setup: defaultSetup(),
   questions: [],
   allTags: ['Conceptual','Calculation Heavy','Easy Miss','Must Revise','Repeated Pattern','Exam Favourite','Trap Question','Good Question','Shortcut Available','Accuracy Issue'],
   customReasons: [],
@@ -3858,6 +3966,7 @@ function switchTab(tabName){
   if(tabName==='revision') renderRevision();
   if(tabName==='mocks'&&typeof mzEnterTab==='function')mzEnterTab();
   if(tabName==='pattern') setTimeout(renderPattern, 80);
+  if(tabName==='settings') populateMockDefaults();
 }
 
 // ═══════════════════════════════════════════
@@ -5223,14 +5332,14 @@ function renderTable(){
     
     return `<tr class="drow">
       <td style="font-weight:900;color:#6366f1;">${q.qNo}</td>
+      <td><span class="dpill ${sCol[q.status]||''}">${escapeHtml(q.status)}</span></td>
       <td>
-        <select class="inp" style="width:auto;font-size:11px;padding:2px 4px;" onchange="updateCategory(${oi}, this.value)">
+        <select class="inp" style="width:100%;font-size:11px;padding:2px 4px;" onchange="updateCategory(${oi}, this.value)">
           ${CATEGORIES.map(c=>`<option value="${c}"${q.category===c?' selected':''}>${c==='Arithmetic'?'📗':''}${c==='Advanced Maths'?'🔷':''} ${c}</option>`).join('')}
         </select>
       </td>
-      <td><span class="dpill ${sCol[q.status]||''}">${escapeHtml(q.status)}</span></td>
-      <td style="font-weight:600;white-space:nowrap">${escapeHtml(q.chapter)||'—'}</td>
-      <td style="white-space:nowrap">${escapeHtml(q.topic)||'—'}</td>
+      <td style="font-weight:600;">${escapeHtml(q.chapter)||'—'}</td>
+      <td>${escapeHtml(q.topic)||'—'}</td>
       <td style="font-size:11px;color:#94a3b8">${escapeHtml(q.subtopic)||'—'}</td>
       <td style="text-align:center;font-weight:700">${tt}${overtimeBadge}</td>
       <td><span class="dpill ${dCol[q.difficultyLevel]||''}">${escapeHtml(q.difficultyLevel)||'—'}</span></td>
@@ -6918,7 +7027,7 @@ function clearAll(){
   idbDel(DB_KEY + '_meta');
   _lastDataBytes = 0;
   S.questions = [];
-  S.setup = {date:'', examName:'', year:2026, name:'', subject:'Quantitative Aptitude', totalQ:25, totalTime:15, percentile:null, avgScore:null, cutoff:null, marksCorrect:2, marksWrong:0.5};
+  S.setup = defaultSetup();
   S.allTags = ['Conceptual','Calculation Heavy','Easy Miss','Must Revise','Repeated Pattern','Exam Favourite','Trap Question','Good Question','Shortcut Available','Accuracy Issue'];
   S.customReasons = [];
   S.mocks = [];
@@ -9282,7 +9391,7 @@ else rvBindEvents();
   </div>
 </nav>
 <div id="dockSheet">
-  <button class="sheet-b" data-dock="entryQuestions" onclick="dockGo('entry');entrySetMode('questions')"><span class="di">📋</span>Questions</button>
+  <button class="sheet-b" data-dock="settings"  onclick="dockGo('settings')"><span class="di">⚙️</span>Settings</button>
   <button class="sheet-b" data-dock="mocks"     onclick="dockGo('mocks')"><span class="di">📝</span>Mocks</button>
   <button class="sheet-b" data-dock="pattern"   onclick="dockGo('pattern')"><span class="di">📊</span>Season</button>
   <button class="sheet-b" data-dock="data"      onclick="dockGo('data')"><span class="di">💾</span>Data</button>
