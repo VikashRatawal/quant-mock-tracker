@@ -1,9 +1,10 @@
-const CACHE_NAME = 'qmt-static-v1';
+const CACHE_NAME = 'qmt-static-v2';
 const STATIC_ASSETS = [
   './index.html',
   './manifest.webmanifest',
   './js/firebase-auth.js',
   './js/ai.js',
+  './js/improvements.js',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/maskable-512.png'

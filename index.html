@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="SSC Quant mock tracker — import mocks, analyse mistakes, revise shortcuts, and replay sectional tests."/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="theme-color" content="#6366f1"/>
@@ -2515,6 +2517,77 @@ body.dark .ai-preset{background:#312e81;color:#ddd6fe;border-color:#6d28d9}
 body.dark .ai-video-meta{color:#94a3b8}
 @media(max-width:640px){#authUser{max-width:145px}#authEmail{display:none}.auth-card{padding:20px}.ai-modal-card{padding:16px}}
 
+
+/* ═══ TODAY FOCUS + COMMAND PALETTE + BANNERS ═══ */
+#homeFocus{display:flex;flex-direction:column;gap:12px;margin-bottom:14px;}
+.hf-hello{font-size:12px;font-weight:800;color:var(--tx-2,#64748b);letter-spacing:.02em;margin-bottom:4px;}
+.hf-hero h2,.hf-empty h2{font-size:20px;font-weight:900;margin:0 0 6px;letter-spacing:-.03em;}
+.hf-empty p,.hf-sub{font-size:13px;color:var(--tx-2,#64748b);margin:0 0 12px;line-height:1.5;}
+.hf-title-row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.hf-title-row h2{margin:0;}
+.hf-pill{font-size:11px;font-weight:900;padding:4px 10px;border-radius:999px;background:var(--i50,#eef2ff);color:var(--i700,#4338ca);}
+body.dark .hf-pill{background:rgba(99,102,241,.2);color:#c7d2fe;}
+.hf-goal{margin:10px 0 14px;}
+.hf-goal-top{display:flex;justify-content:space-between;font-size:12px;font-weight:800;margin-bottom:6px;}
+.hf-goal-track{height:8px;border-radius:999px;background:var(--line,#e2e8f0);overflow:hidden;}
+.hf-goal-track>i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#6366f1,#22c55e);}
+.hf-actions{display:flex;flex-wrap:wrap;gap:8px;}
+.hf-btn{border:1.5px solid var(--line-2,#e2e8f0);background:var(--surface-solid,#fff);color:var(--tx,#1e293b);
+  border-radius:11px;padding:9px 12px;font-size:12px;font-weight:800;cursor:pointer;}
+.hf-btn.primary{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border-color:transparent;}
+.hf-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.hf-spark{width:100%;height:48px;display:block;margin:4px 0 10px;}
+.hf-compare{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.hf-compare small{display:block;font-size:10px;font-weight:800;color:var(--tx-3,#94a3b8);text-transform:uppercase;}
+.hf-compare b{font-size:18px;font-weight:900;}
+.hf-compare .up,.hf-row .up{color:#16a34a;}
+.hf-compare .down,.hf-row .down{color:#dc2626;}
+.hf-list{display:flex;flex-direction:column;gap:6px;}
+.hf-row{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;
+  border:1px solid var(--line,#e2e8f0);background:var(--surface-2,#f8fafc);border-radius:11px;padding:10px 12px;cursor:pointer;}
+.hf-row span{display:flex;flex-direction:column;gap:2px;font-size:13px;font-weight:800;min-width:0;}
+.hf-row small{font-size:11px;font-weight:600;color:var(--tx-3,#94a3b8);}
+.hf-row.done{opacity:.55;}
+.hf-muted{font-size:12px;color:var(--tx-3,#94a3b8);font-weight:700;padding:8px 0;}
+.hf-count{margin-left:6px;font-size:11px;background:var(--i50,#eef2ff);color:var(--i700,#4338ca);border-radius:999px;padding:2px 8px;}
+.qmt-banner{display:none;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  margin:0 12px 10px;padding:10px 14px;border-radius:12px;font-size:13px;font-weight:800;
+  background:#eef2ff;color:#312e81;border:1px solid #c7d2fe;}
+.qmt-banner.show{display:flex;}
+#offlineBanner{background:#fff7ed;color:#9a3412;border-color:#fdba74;}
+body.dark .qmt-banner{background:#312e81;color:#e0e7ff;border-color:#4338ca;}
+body.dark #offlineBanner{background:#431407;color:#fdba74;border-color:#9a3412;}
+.qmt-banner button{border:0;border-radius:9px;padding:7px 11px;font-weight:800;cursor:pointer;background:#6366f1;color:#fff;}
+.qmt-banner .ghost{background:transparent;color:inherit;}
+#cmdk{position:fixed;inset:0;z-index:4000;display:none;align-items:flex-start;justify-content:center;
+  padding:12vh 16px 16px;background:rgba(15,23,42,.48);}
+#cmdk.open{display:flex;}
+.cmdk-card{width:min(560px,100%);background:var(--surface-solid,#fff);border:1px solid var(--line,#e2e8f0);
+  border-radius:16px;box-shadow:0 20px 60px rgba(15,23,42,.28);overflow:hidden;}
+body.dark .cmdk-card{background:#141c2e;border-color:#334155;}
+#cmdkInput{width:100%;border:0!important;border-bottom:1px solid var(--line,#e2e8f0)!important;border-radius:0!important;
+  padding:16px 18px!important;font-size:15px!important;font-weight:700;background:transparent!important;box-shadow:none!important;}
+.cmdk-item{width:100%;display:flex;align-items:center;gap:10px;padding:10px 14px;border:0;background:none;cursor:pointer;text-align:left;}
+.cmdk-item.on,.cmdk-item:hover{background:var(--i50,#eef2ff);}
+body.dark .cmdk-item.on,body.dark .cmdk-item:hover{background:rgba(99,102,241,.16);}
+.cmdk-ic{width:28px;text-align:center;}
+.cmdk-txt{display:flex;flex-direction:column;min-width:0;}
+.cmdk-txt b{font-size:13px;font-weight:800;}
+.cmdk-txt small{font-size:11px;color:var(--tx-3,#94a3b8);}
+.cmdk-empty{padding:18px;text-align:center;color:var(--tx-3,#94a3b8);font-weight:700;}
+.cmdk-hint{padding:8px 14px 12px;font-size:11px;color:var(--tx-3,#94a3b8);font-weight:700;}
+#helpSheet{display:none;position:fixed;inset:auto 12px 80px;z-index:3900;background:var(--surface-solid,#fff);
+  border:1px solid var(--line,#e2e8f0);border-radius:14px;padding:14px;box-shadow:0 12px 40px rgba(15,23,42,.2);}
+#helpSheet.open{display:block;}
+body.dark #helpSheet{background:#141c2e;border-color:#334155;}
+#helpSheet h3{font-size:14px;margin-bottom:8px;}
+#helpSheet kbd{display:inline-block;min-width:22px;padding:2px 6px;border-radius:6px;background:#e2e8f0;font-size:11px;font-weight:800;}
+body.dark #helpSheet kbd{background:#334155;}
+#helpSheet p{font-size:12px;margin:5px 0;display:flex;justify-content:space-between;gap:12px;}
+.cmdk-open-btn{width:42px;height:42px;border-radius:12px;border:1px solid var(--line-2,#e2e8f0);background:var(--surface-2,#f8fafc);
+  cursor:pointer;font-size:16px;}
+@media(max-width:640px){.hf-grid{grid-template-columns:1fr;}}
+
 </style>
 </head>
 <body>
@@ -2528,6 +2601,7 @@ body.dark .ai-video-meta{color:#94a3b8}
         <span id="authAvatar">U</span><span id="authEmail"></span>
         <button id="authLogout" type="button">Logout</button>
       </div>
+      <button class="cmdk-open-btn" type="button" onclick="openCommandPalette()" title="Search tabs and mocks (Ctrl/⌘ K)" aria-label="Open command palette">🔍</button>
       <button class="dark-toggle" onclick="toggleDark()" title="Toggle Dark Mode" id="darkBtn">🌙</button>
     </div>
   </div>
@@ -2579,6 +2653,8 @@ body.dark .ai-video-meta{color:#94a3b8}
       <div class="sc-lbl">Avg Score</div>
     </div>
   </div>
+
+  <div id="homeFocus"></div>
 
   <div class="card">
     <div class="card-body">
@@ -3364,6 +3440,28 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
 
 </div><!-- /main -->
 
+<div id="installBanner" class="qmt-banner" role="status">
+  <span>📲 Home screen par install karein — offline bhi chalega.</span>
+  <span>
+    <button type="button" id="installYes">Install</button>
+    <button type="button" class="ghost" id="installNo">Later</button>
+  </span>
+</div>
+<div id="offlineBanner" class="qmt-banner" role="status">📴 Offline mode — pehle se saved mocks chalenge.</div>
+<div id="cmdk" aria-hidden="true">
+  <div class="cmdk-card" role="dialog" aria-label="Command palette">
+    <input id="cmdkInput" type="search" placeholder="Tabs, mocks, actions…  (Ctrl/⌘ K)" autocomplete="off"/>
+    <div id="cmdkList"></div>
+    <div class="cmdk-hint">↑↓ move · Enter open · Esc close · 1–7 tabs · / search</div>
+  </div>
+</div>
+<div id="helpSheet">
+  <h3>Keyboard shortcuts</h3>
+  <p><span>Command palette</span><kbd>Ctrl</kbd> <kbd>K</kbd></p>
+  <p><span>Tabs Home → Data</span><kbd>1</kbd>–<kbd>7</kbd></p>
+  <p><span>Search mocks</span><kbd>/</kbd></p>
+  <p><span>This help</span><kbd>?</kbd></p>
+</div>
 <!-- Toast -->
 <div id="toast"></div>
 
@@ -3490,6 +3588,11 @@ document.addEventListener('DOMContentLoaded', () => {
     mzRenderLanding();
     renderPattern();
     initStorageIndicator();
+    if(typeof renderHomeFocus==='function') renderHomeFocus();
+    try{
+      const last=localStorage.getItem('qmt_last_tab');
+      if(last && last!=='home' && document.getElementById('tab-'+last)) switchTab(last);
+    }catch(e){}
   });
 });
 
@@ -3684,8 +3787,12 @@ function applyState(data){
 // DARK MODE
 // ═══════════════════════════════════════════
 function initDarkMode(){
-  const dark = localStorage.getItem('sscDark') === 'true';
+  const saved = localStorage.getItem('sscDark');
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const dark = saved === 'true' || (saved === null && prefersDark);
   if(dark) enableDark();
+  const theme = document.querySelector('meta[name="theme-color"]');
+  if(theme) theme.content = dark ? '#080c16' : '#6366f1';
 }
 
 function toggleDark(){
@@ -3697,6 +3804,7 @@ function enableDark(){
   document.body.classList.add('dark');
   document.getElementById('darkBtn').textContent = '☀️';
   localStorage.setItem('sscDark', 'true');
+  const tm=document.querySelector('meta[name="theme-color"]'); if(tm) tm.content='#080c16';
   if(typeof Chart !== 'undefined'){
     Chart.defaults.color = '#94a3b8';
     Chart.defaults.borderColor = '#33415522';
@@ -3709,6 +3817,7 @@ function disableDark(){
   document.body.classList.remove('dark');
   document.getElementById('darkBtn').textContent = '🌙';
   localStorage.setItem('sscDark', 'false');
+  const tm=document.querySelector('meta[name="theme-color"]'); if(tm) tm.content='#6366f1';
   if(typeof Chart !== 'undefined'){
     Chart.defaults.color = '#475569';
     Chart.defaults.borderColor = '#e2e8f022';
@@ -3733,6 +3842,7 @@ function entrySetMode(mode){
 }
 function switchTab(tabName){
   const target=document.getElementById('tab-'+tabName);if(!target)return;
+  try{ localStorage.setItem('qmt_last_tab', tabName); }catch(e){}
   document.querySelectorAll('[id^="tab-"]').forEach(el=>el.classList.add('hidden'));
   target.classList.remove('hidden');
   document.querySelectorAll('.tab-btn').forEach(btn=>{
@@ -3903,8 +4013,9 @@ function updateHomeStats(){
   const exams = [...new Set(S.mocks.map(m=>m.examName))].sort();
   const years = [...new Set(S.mocks.map(m=>m.year))].sort((a,b)=>b-a);
   
-  g('filterExam').innerHTML = '<option value="">All Exams</option>' + exams.map(e=>`<option value="${e}">${e}</option>`).join('');
-  g('filterYear').innerHTML = '<option value="">All Years</option>' + years.map(y=>`<option value="${y}">${y}</option>`).join('');
+  g('filterExam').innerHTML = '<option value="">All Exams</option>' + exams.map(e=>`<option value="${escapeHtml(e)}">${escapeHtml(e)}</option>`).join('');
+  g('filterYear').innerHTML = '<option value="">All Years</option>' + years.map(y=>`<option value="${escapeHtml(y)}">${escapeHtml(y)}</option>`).join('');
+  if(typeof renderHomeFocus==='function') renderHomeFocus();
 }
 
 function getFilteredMocks(){
@@ -3967,9 +4078,10 @@ function renderMockHistory(){
       const pct = maxScore>0 ? Math.max(0,Math.min(100,(score/maxScore)*100)) : 0;
       const barColor = pct>=60?'#10b981':pct>=40?'#f59e0b':'#ef4444';
       
+      const safeId = String(m.id||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
       html += `<div class="mock-item">
         <div class="mock-header">
-          <div class="mock-name">${m.name}</div>
+          <div class="mock-name">${escapeHtml(m.name||'Untitled mock')}</div>
           <div class="mock-date">${formatDate(m.date)}</div>
         </div>
         <div style="margin:10px 0;">
@@ -3985,9 +4097,10 @@ function renderMockHistory(){
           ✅ ${correct} Correct &nbsp;|&nbsp; ❌ ${incorrect} Incorrect &nbsp;|&nbsp; 📊 ${m.accuracy}% &nbsp;|&nbsp; 🎯 ${m.percentile||'N/A'}
         </div>
         <div class="mock-actions">
-          <button class="mock-btn mock-btn-load" onclick="loadMock('${m.id}')">📂 Load Mock</button>
-          <button class="mock-btn mock-btn-view" onclick="viewMockRevision('${m.id}')">📚 Revision</button>
-          <button class="mock-btn mock-btn-delete" onclick="deleteMock('${m.id}')">🗑️ Delete</button>
+          <button class="mock-btn mock-btn-load" onclick="loadMock('${safeId}')">📂 Load</button>
+          <button class="mock-btn mock-btn-view" onclick="viewMockAnalytics('${safeId}')">📈 Stats</button>
+          <button class="mock-btn mock-btn-view" onclick="viewMockRevision('${safeId}')">📚 Notes</button>
+          <button class="mock-btn mock-btn-delete" onclick="deleteMock('${safeId}')">🗑️</button>
         </div>
       </div>`;
     });
@@ -4012,6 +4125,7 @@ function loadMock(id){
   renderTable();
   
   showToast(`📂 "${mock.name}" loaded! Date: ${formatDate(mock.date)}`);
+  switchTab('entry');
 }
 
 function deleteMock(id){
@@ -7498,7 +7612,7 @@ document.addEventListener('click', function(e){
   });
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2a50e5029b27083',t:'MTc4NjU5NjE3NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2b96efc992ff82b',t:'MTc4NjgwOTg1MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2bff5659fa7442a',t:'MTc4Njg3ODI3MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2c5e046c8aa8540',t:'MTc4Njk0MDMxOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();
+<script>
 /* ══════════ REVISION TAB v2 ══════════ */
 /* ══════════════════════════════════════════════════════════════════════
    📥 UNIFIED MOCK PARSER  — ek hi input box, teeno format auto-detect
@@ -7900,8 +8014,8 @@ let rvPendingOnly=false, rvCurrentTab='all';
 const rvIsOvertime = q => q.time > q.avgTime;
 const rvEsc = s => String(s==null?'':s);
 const rvStrip = s => rvEsc(s).replace(/<[^>]*>/g,'');
-const rvLi = (arr,cls) => '<ul class="rv2-bul">'+(arr||[]).map(x=>'<rvLi>'+x+'</rvLi>').join('')+'</ul>';
-const rvOli = (arr) => '<ol class="rv2-bul">'+(arr||[]).map(x=>'<rvLi>'+x+'</rvLi>').join('')+'</ol>';
+const rvLi = (arr,cls) => '<ul class="rv2-bul">'+(arr||[]).map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+const rvOli = (arr) => '<ol class="rv2-bul">'+(arr||[]).map(x=>'<li>'+x+'</li>').join('')+'</ol>';
 const rvFbox = arr => '<div class="rv2-formula-box">'+(arr||[]).map(f=>
   '<div class="rv2-frow"><code data-raw="'+rvStrip(f).replace(/"/g,'&quot;')+'">'+
   (/\$|\\\\[a-zA-Z]/.test(f)?rvMath(f):rvFmtFormula(f))+
@@ -9173,7 +9287,7 @@ else rvBindEvents();
   <button class="sheet-b" data-dock="pattern"   onclick="dockGo('pattern')"><span class="di">📊</span>Season</button>
   <button class="sheet-b" data-dock="data"      onclick="dockGo('data')"><span class="di">💾</span>Data</button>
 </div>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2d110ab0b9a0bc3',t:'MTc4NzA1NzY0NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a2d90d989b62b117',t:'MTc4NzE0MTQwNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 <script>
 /* Additive bridge for ES modules. The original state, persistence and render
    functions stay in their existing classic script scope. */
@@ -9197,6 +9311,7 @@ window.QMT = {
   }
 };
 </script>
+<script src="./js/improvements.js"></script>
 <script type="module" src="./js/firebase-auth.js"></script>
 <script type="module" src="./js/ai.js"></script>
 </html>
