@@ -1,7 +1,31 @@
 const AI_STORAGE_KEY = 'qmt_ai_settings_v1';
 const AI_LANGUAGE_KEY = 'qmt_ai_language_v1';
-const GEMINI_MODEL = 'gemini-2.0-flash';
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/' + GEMINI_MODEL + ':generateContent';
+const GEMINI_MODELS = [
+  'gemini-3.6-flash',
+  'gemini-3.7-flash',
+  'gemini-3.5-flash',
+  'gemini-3.5-flash-lite',
+  'gemini-3.1-flash-lite',
+  'gemini-3.1-pro-preview',
+  'gemini-3-flash-preview',
+  'gemini-2.5-pro',
+  'gemini-2.5-flash',
+  'gemini-2.5-flash-lite'
+];
+const DEFAULT_GEMINI_MODEL = 'gemini-3.6-flash';
+const GEMINI_DEPRECATED = {
+  'gemini-2.0-flash': 'gemini-3.6-flash',
+  'gemini-2.0-flash-001': 'gemini-3.6-flash',
+  'gemini-2.0-flash-lite': 'gemini-3.6-flash',
+  'gemini-2.0-flash-lite-001': 'gemini-3.6-flash'
+};
+const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models/';
+const EXTRA_PRESETS = [
+  { id: 'openrouter', label: 'OpenRouter', base: 'https://openrouter.ai/api/v1', model: 'openai/gpt-4o-mini' },
+  { id: 'groq', label: 'Groq', base: 'https://api.groq.com/openai/v1', model: 'llama-3.3-70b-versatile' },
+  { id: 'openai', label: 'OpenAI', base: 'https://api.openai.com/v1', model: 'gpt-4o-mini' },
+  { id: 'custom', label: 'Custom URL', base: '', model: '' }
+];
 const PDFJS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
 
 const AI = {
@@ -13,12 +37,20 @@ const AI = {
 };
 
 function loadSettings() {
-  const fallback = { geminiKey: '', youtubeKey: '', language: localStorage.getItem(AI_LANGUAGE_KEY) || 'Hinglish' };
+  const fallback = {
+    provider: 'gemini',
+    geminiKey: '',
+    geminiModel: DEFAULT_GEMINI_MODEL,
+    extraKey: '',
+    extraModel: 'gpt-4o-mini',
+    extraBaseUrl: 'https://api.openai.com/v1',
+    language: localStorage.getItem(AI_LANGUAGE_KEY) || 'Hinglish'
+  };
+  let raw = {};
   try {
-    return Object.assign(fallback, JSON.parse(localStorage.getItem(AI_STORAGE_KEY) || '{}'));
-  } catch (error) {
-    return fallback;
-  }
+    raw = JSON.parse(localStorage.getItem(AI_STORAGE_KEY) || '{}');
+  } catch (error) {}
+  return normalizedSettings(Object.assign(fallback, raw));
 }
 
 function legacySettings() {
@@ -29,21 +61,57 @@ function legacySettings() {
   }
 }
 
+function normalizeModel(model) {
+  const m = String(model || '').trim();
+  return GEMINI_DEPRECATED[m] || m;
+}
+
 function normalizedSettings(settings = {}) {
   return {
+    provider: settings.provider === 'extra' ? 'extra' : 'gemini',
     geminiKey: String(settings.geminiKey || ''),
-    youtubeKey: String(settings.youtubeKey || ''),
+    geminiModel: normalizeModel(settings.geminiModel || DEFAULT_GEMINI_MODEL) || DEFAULT_GEMINI_MODEL,
+    extraKey: String(settings.extraKey || ''),
+    extraModel: String(settings.extraModel || 'gpt-4o-mini'),
+    extraBaseUrl: String(settings.extraBaseUrl || 'https://api.openai.com/v1'),
     language: ['Hindi', 'English', 'Hinglish'].includes(settings.language) ? settings.language : 'Hinglish'
   };
 }
 
+function syncProviderFields() {
+  const provider = document.getElementById('aiProvider');
+  const geminiFields = document.getElementById('aiGeminiFields');
+  const extraFields = document.getElementById('aiExtraFields');
+  const isExtra = provider && provider.value === 'extra';
+  if (geminiFields) geminiFields.classList.toggle('hidden', isExtra);
+  if (extraFields) extraFields.classList.toggle('hidden', !isExtra);
+}
+
+function syncExtraPreset(baseUrl) {
+  const preset = document.getElementById('aiExtraBasePreset');
+  if (!preset) return;
+  const clean = String(baseUrl || '').replace(/\/+$/, '');
+  const match = EXTRA_PRESETS.find(item => item.base && clean === item.base.replace(/\/+$/, ''));
+  preset.value = match ? match.id : 'custom';
+}
+
 function populateSettings() {
-  const gemini = document.getElementById('aiGeminiKey');
-  const youtube = document.getElementById('aiYoutubeKey');
+  const provider = document.getElementById('aiProvider');
+  const geminiKey = document.getElementById('aiGeminiKey');
+  const geminiModel = document.getElementById('aiGeminiModel');
+  const extraKey = document.getElementById('aiExtraKey');
+  const extraModel = document.getElementById('aiExtraModel');
+  const extraBaseUrl = document.getElementById('aiExtraBaseUrl');
   const language = document.getElementById('aiLanguage');
-  if (gemini) gemini.value = AI.settings.geminiKey || '';
-  if (youtube) youtube.value = AI.settings.youtubeKey || '';
+  if (provider) provider.value = AI.settings.provider === 'extra' ? 'extra' : 'gemini';
+  if (geminiKey) geminiKey.value = AI.settings.geminiKey || '';
+  if (geminiModel) geminiModel.value = AI.settings.geminiModel || DEFAULT_GEMINI_MODEL;
+  if (extraKey) extraKey.value = AI.settings.extraKey || '';
+  if (extraModel) extraModel.value = AI.settings.extraModel || '';
+  if (extraBaseUrl) extraBaseUrl.value = AI.settings.extraBaseUrl || '';
+  syncExtraPreset(AI.settings.extraBaseUrl);
   if (language) language.value = AI.settings.language || 'Hinglish';
+  syncProviderFields();
 }
 
 function firestoreToast(error) {
@@ -92,8 +160,12 @@ function handleAuthState(user) {
 }
 
 async function saveSettings() {
+  AI.settings.provider = document.getElementById('aiProvider')?.value === 'extra' ? 'extra' : 'gemini';
   AI.settings.geminiKey = document.getElementById('aiGeminiKey')?.value.trim() || '';
-  AI.settings.youtubeKey = document.getElementById('aiYoutubeKey')?.value.trim() || '';
+  AI.settings.geminiModel = normalizeModel(document.getElementById('aiGeminiModel')?.value.trim() || DEFAULT_GEMINI_MODEL) || DEFAULT_GEMINI_MODEL;
+  AI.settings.extraKey = document.getElementById('aiExtraKey')?.value.trim() || '';
+  AI.settings.extraModel = document.getElementById('aiExtraModel')?.value.trim() || '';
+  AI.settings.extraBaseUrl = document.getElementById('aiExtraBaseUrl')?.value.trim().replace(/\/+$/, '') || '';
   AI.settings.language = document.getElementById('aiLanguage')?.value || 'Hinglish';
   localStorage.setItem(AI_LANGUAGE_KEY, AI.settings.language);
   localStorage.removeItem(AI_STORAGE_KEY);
@@ -144,27 +216,26 @@ function state() {
   return window.QMT?.getState?.() || { questions: [], setup: {} };
 }
 
-function requireGeminiKey() {
-  if (!AI.settings.geminiKey) {
-    toast('⚠️ API key set karein');
-    openModal('AI Settings', '<div class="ai-response">Data tab me Gemini API key save karein, phir dobara try karein.</div>');
-    return '';
-  }
-  return AI.settings.geminiKey;
+function activeProvider() {
+  return AI.settings.provider === 'extra' ? 'extra' : 'gemini';
 }
 
-function requireYoutubeKey() {
-  if (!AI.settings.youtubeKey) {
-    toast('⚠️ API key set karein');
+function requireApiKey() {
+  const key = activeProvider() === 'extra' ? AI.settings.extraKey : AI.settings.geminiKey;
+  if (!key) {
+    toast('⚠️ Settings tab me API key save karein');
+    if (typeof window.switchTab === 'function') window.switchTab('settings');
     return '';
   }
-  return AI.settings.youtubeKey;
+  return key;
 }
 
 async function askGemini(prompt) {
-  const key = requireGeminiKey();
+  const key = AI.settings.geminiKey;
   if (!key) throw new Error('Gemini API key missing');
-  const response = await fetch(`${GEMINI_URL}?key=${encodeURIComponent(key)}`, {
+  const model = AI.settings.geminiModel || DEFAULT_GEMINI_MODEL;
+  const url = GEMINI_BASE + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(key);
+  const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -179,6 +250,35 @@ async function askGemini(prompt) {
   }
   const data = await response.json();
   return data?.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('\n').trim() || '';
+}
+
+async function askExtra(prompt) {
+  const key = AI.settings.extraKey;
+  const model = AI.settings.extraModel;
+  const base = String(AI.settings.extraBaseUrl || '').replace(/\/+$/, '');
+  if (!key) throw new Error('Extra API key missing');
+  if (!model) throw new Error('Extra API model missing');
+  if (!base) throw new Error('Extra API base URL missing');
+  const response = await fetch(base + '/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key },
+    body: JSON.stringify({
+      model,
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.25
+    })
+  });
+  if (!response.ok) {
+    let detail = '';
+    try { detail = (await response.json())?.error?.message || ''; } catch (error) {}
+    throw new Error(detail || `Extra API request failed (${response.status})`);
+  }
+  const data = await response.json();
+  return data?.choices?.[0]?.message?.content?.trim() || '';
+}
+
+async function askAI(prompt) {
+  return activeProvider() === 'extra' ? askExtra(prompt) : askGemini(prompt);
 }
 
 function setBusy(button, busy, label) {
@@ -248,12 +348,12 @@ function questionContext(question) {
 }
 
 async function renderAIResponse(title, prompt, button) {
-  const key = requireGeminiKey();
+  const key = requireApiKey();
   if (!key) return;
   setBusy(button, true);
   openModal(title, '<div class="ai-loading">🤖 AI soch raha hai...</div>');
   try {
-    const answer = await askGemini(prompt);
+    const answer = await askAI(prompt);
     document.getElementById('aiModalBody').innerHTML =
       `<div class="ai-response">${markdown(answer || 'AI response nahi mila.')}</div>`;
   } catch (error) {
@@ -295,18 +395,63 @@ function showQuestionAI(no, mode = 'ask', preset = 'आसान भाषा �
   renderAIResponse(title, prompt, button);
 }
 
+function onProviderChange() {
+  syncProviderFields();
+  const provider = document.getElementById('aiProvider');
+  if (provider && provider.value === 'extra') {
+    const model = document.getElementById('aiExtraModel');
+    const base = document.getElementById('aiExtraBaseUrl');
+    if (base && !base.value) base.value = EXTRA_PRESETS[2].base;
+    if (model && !model.value) model.value = EXTRA_PRESETS[2].model;
+    syncExtraPreset(base ? base.value : '');
+  }
+}
+
+function onExtraPresetChange() {
+  const preset = document.getElementById('aiExtraBasePreset');
+  const model = document.getElementById('aiExtraModel');
+  const base = document.getElementById('aiExtraBaseUrl');
+  if (!preset) return;
+  const item = EXTRA_PRESETS.find(entry => entry.id === preset.value);
+  if (!item) return;
+  if (base) base.value = item.base || '';
+  if (item.model && model) model.value = item.model;
+}
+
 function addSettingsCard() {
-  const tab = document.getElementById('tab-data');
+  const tab = document.getElementById('tab-settings');
   if (!tab || document.getElementById('aiSettingsCard')) return;
   const card = document.createElement('div');
   card.id = 'aiSettingsCard';
   card.className = 'card ai-card';
   card.innerHTML = `<div class="card-body">
     <div class="ai-title">🤖 AI Settings</div>
-    <div class="ai-sub">Keys ab aapke Firebase account (Firestore) me save hoti hain, sirf aapke login se access.</div>
-    <div class="ai-grid">
-      <label><span class="lbl">Gemini API key</span><input id="aiGeminiKey" class="inp" type="password" autocomplete="off" placeholder="AIza..."></label>
-      <label><span class="lbl">YouTube Data API key</span><input id="aiYoutubeKey" class="inp" type="password" autocomplete="off" placeholder="AIza..."></label>
+    <div class="ai-sub">Keys Firebase account (Firestore) me save hoti hain, sirf aapke login se access.</div>
+    <label><span class="lbl">AI Provider</span>
+      <select id="aiProvider" class="inp">
+        <option value="gemini">🪐 Gemini (Google)</option>
+        <option value="extra">🔌 Extra API (OpenRouter / Groq / OpenAI)</option>
+      </select>
+    </label>
+    <div id="aiGeminiFields" style="margin-top:10px">
+      <div class="ai-grid">
+        <label><span class="lbl">Gemini API key</span><input id="aiGeminiKey" class="inp" type="password" autocomplete="off" placeholder="AIza..."></label>
+        <label><span class="lbl">Gemini Model</span>
+          <select id="aiGeminiModel" class="inp">${GEMINI_MODELS.map(m=>`<option value="${m}">${m}</option>`).join('')}</select>
+        </label>
+      </div>
+    </div>
+    <div id="aiExtraFields" class="hidden" style="margin-top:10px">
+      <div class="ai-grid">
+        <label><span class="lbl">Extra API key</span><input id="aiExtraKey" class="inp" type="password" autocomplete="off" placeholder="sk-... / provider key"></label>
+        <label><span class="lbl">Model</span><input id="aiExtraModel" class="inp" type="text" placeholder="gpt-4o-mini"></label>
+        <label><span class="lbl">Base URL preset</span>
+          <select id="aiExtraBasePreset" class="inp">${EXTRA_PRESETS.map(p=>`<option value="${p.id}">${p.label}</option>`).join('')}</select>
+        </label>
+        <label><span class="lbl">Base URL</span><input id="aiExtraBaseUrl" class="inp" type="text" placeholder="https://api.openai.com/v1"></label>
+      </div>
+    </div>
+    <div class="ai-grid" style="margin-top:10px">
       <label><span class="lbl">Language preference</span><select id="aiLanguage" class="inp"><option>Hindi</option><option>English</option><option>Hinglish</option></select></label>
     </div>
     <button class="ai-btn" id="aiSaveSettings" type="button" style="margin-top:12px">💾 Save AI Settings</button>
@@ -314,6 +459,8 @@ function addSettingsCard() {
   tab.firstElementChild?.prepend(card);
   populateSettings();
   document.getElementById('aiSaveSettings').addEventListener('click', saveSettings);
+  document.getElementById('aiProvider').addEventListener('change', onProviderChange);
+  document.getElementById('aiExtraBasePreset').addEventListener('change', onExtraPresetChange);
 }
 
 function addSmartImportCard() {
@@ -487,7 +634,7 @@ async function parseSmartImport(event) {
   const button = event.currentTarget;
   const status = document.getElementById('aiImportStatus');
   const file = document.getElementById('aiImportFile')?.files?.[0];
-  const key = requireGeminiKey();
+  const key = requireApiKey();
   if (!key || !file) {
     if (!file) toast('⚠️ PDF/TXT file select karein');
     return;
@@ -497,7 +644,7 @@ async function parseSmartImport(event) {
   try {
     const text = await extractFile(file);
     if (status) status.textContent = `🤖 ${text.length.toLocaleString()} characters AI ko bheje ja rahe hain...`;
-    const questions = parseJsonResponse(await askGemini(importPrompt(text)));
+    const questions = parseJsonResponse(await askAI(importPrompt(text)));
     renderImportPreview(questions);
     if (status) status.textContent = `✅ ${questions.length} questions ka preview ready hai`;
   } catch (error) {
@@ -538,7 +685,7 @@ async function createStudyPlan(event) {
   const button = event.currentTarget;
   const payload = planPayload();
   if (!payload.totals.questions) return toast('⚠️ Pehle kuch questions add karein');
-  const key = requireGeminiKey();
+  const key = requireApiKey();
   if (!key) return;
   setBusy(button, true);
   try {
@@ -552,7 +699,7 @@ Create a personalized plan from this analytics JSON. Use exactly these headings:
 Give concrete counts and short actions; never invent question numbers not present.
 ANALYTICS:
 ${JSON.stringify(payload, null, 2)}`;
-    const answer = await askGemini(prompt);
+    const answer = await askAI(prompt);
     const preview = document.getElementById('aiStudyPlanPreview');
     if (preview) {
       preview.classList.remove('hidden');
@@ -567,59 +714,18 @@ ${JSON.stringify(payload, null, 2)}`;
   }
 }
 
-function durationSeconds(iso) {
-  const match = String(iso || '').match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/i);
-  if (!match) return 0;
-  return (Number(match[1]) || 0) * 3600 + (Number(match[2]) || 0) * 60 + (Number(match[3]) || 0);
-}
-
-async function findVideos(no, button) {
-  const key = requireYoutubeKey();
-  if (!key) return;
+function findVideos(no, button) {
   const question = questionByNo(no);
   if (!question) return;
-  setBusy(button, true, '⏳ Finding...');
+  const concept = [question.chapter, question.topic, question.subtopic].filter(Boolean).join(' ');
+  const query = (concept ? concept + ' ' : '') + 'SSC Quant concept tricks';
+  const url = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query);
   try {
-    const concept = [question.chapter, question.topic, question.subtopic].filter(Boolean).join(' ');
-    const query = `${concept} SSC ${AI.settings.language}`;
-    const searchUrl = new URL('https://www.googleapis.com/youtube/v3/search');
-    searchUrl.search = new URLSearchParams({
-      part: 'snippet', q: query, type: 'video', maxResults: '8', key
-    });
-    const searchResponse = await fetch(searchUrl);
-    if (!searchResponse.ok) throw new Error('YouTube search failed');
-    const searchData = await searchResponse.json();
-    const ids = (searchData.items || []).map(item => item.id?.videoId).filter(Boolean);
-    if (!ids.length) throw new Error('No videos found');
-    const detailsUrl = new URL('https://www.googleapis.com/youtube/v3/videos');
-    detailsUrl.search = new URLSearchParams({ part: 'contentDetails', id: ids.join(','), key });
-    const details = await (await fetch(detailsUrl)).json();
-    const durations = new Map((details.items || []).map(item => [item.id, durationSeconds(item.contentDetails?.duration)]));
-    const seen = new Set();
-    const videos = (searchData.items || []).map(item => {
-      const id = item.id.videoId;
-      const title = item.snippet?.title || 'YouTube Tutorial';
-      const signature = title.toLowerCase().replace(/\W/g, '');
-      if (seen.has(signature)) return null;
-      seen.add(signature);
-      const seconds = durations.get(id) || 0;
-      const channel = item.snippet?.channelTitle || '';
-      return {
-        title: channel ? `${title} · ${channel}` : title,
-        url: `https://www.youtube.com/watch?v=${encodeURIComponent(id)}`,
-        min: seconds ? Math.max(1, Math.round(seconds / 60)) : 0,
-        channel
-      };
-    }).filter(Boolean);
-    question.videos = videos;
-    window.QMT.refresh();
-    toast(`📺 ${videos.length} relevant videos mil gaye`);
+    window.open(url, '_blank', 'noopener');
   } catch (error) {
-    console.error('YouTube:', error);
-    toast('⚠️ YouTube videos nahi mile');
-  } finally {
-    setBusy(button, false);
+    location.href = url;
   }
+  toast('📺 YouTube search naye tab me khula');
 }
 
 function addQuestionButtons() {

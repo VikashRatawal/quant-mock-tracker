@@ -104,8 +104,12 @@ window.firebaseAiSettingsStore = {
     }
     return withFirestoreFallback(db =>
       setDoc(doc(db, 'users', uid, 'private', 'aiSettings'), {
+        provider: String(settings.provider || 'gemini'),
         geminiKey: String(settings.geminiKey || ''),
-        youtubeKey: String(settings.youtubeKey || ''),
+        geminiModel: String(settings.geminiModel || 'gemini-3.6-flash'),
+        extraKey: String(settings.extraKey || ''),
+        extraModel: String(settings.extraModel || ''),
+        extraBaseUrl: String(settings.extraBaseUrl || ''),
         language: String(settings.language || 'Hinglish')
       }, { merge: true }));
   }

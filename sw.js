@@ -1,4 +1,4 @@
-const CACHE_NAME = 'qmt-static-v2';
+const CACHE_NAME = 'qmt-static-v3';
 const STATIC_ASSETS = [
   './index.html',
   './manifest.webmanifest',
