@@ -10,6 +10,9 @@
 <meta name="theme-color" content="#6366f1"/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <link rel="apple-touch-icon" href="./icons/icon-192.png"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 <title>🧮 Quant Mock Tracker</title>
 <script>
 if ('serviceWorker' in navigator) {
@@ -2635,6 +2638,7 @@ body.dark #helpSheet kbd{background:#334155;}
     <button class="tab-btn" data-tab="entry" onclick="switchTab('entry')">📝 Entry</button>
     <button class="tab-btn" data-tab="analytics" onclick="switchTab('analytics')">📈 Analytics</button>
     <button class="tab-btn" data-tab="revision" onclick="switchTab('revision')">📚 Revision</button>
+    <button class="tab-btn" data-tab="chat" onclick="switchTab('chat')">💬 Chat</button>
     <button class="tab-btn" data-tab="mocks" onclick="switchTab('mocks')">📝 Mocks</button>
     <button class="tab-btn" data-tab="pattern" onclick="switchTab('pattern')">📊 Season</button>
     <button class="tab-btn" data-tab="data" onclick="switchTab('data')">💾 Data</button>
@@ -3257,6 +3261,46 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
 
 
 
+</div>
+
+<!-- ═══════════════ TAB: CHAT ═══════════════ -->
+<div id="tab-chat" class="hidden fade-up" style="padding: 12px;">
+  <div class="card" style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; height: calc(100vh - 200px); min-height: 520px;">
+    <div class="card-body" style="display: flex; flex-direction: column; height: 100%; padding: 12px; gap: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line, #e2e8f0); padding-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 20px;">💬</span>
+          <div>
+            <h2 style="font-size: 16px; margin: 0; font-weight: 800;">AI Tutor Chat</h2>
+            <p style="font-size: 11px; margin: 0; color: var(--muted, #64748b);">Ask concepts, practice questions, or discuss doubts</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button id="chatCopyBtn" class="ai-btn secondary" style="padding: 4px 8px; font-size: 11px;" title="Copy entire chat">📋 Copy</button>
+          <button id="chatClearBtn" class="ai-btn secondary" style="padding: 4px 8px; font-size: 11px; color: #ef4444;" title="Clear history">⌫ Clear</button>
+        </div>
+      </div>
+      
+      <!-- Chat message area -->
+      <div id="chatMessages" style="flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; background: var(--bg-1, #f8fafc); border-radius: 8px; border: 1px solid var(--line, #e2e8f0); max-height: calc(100vh - 360px); min-height: 300px;">
+        <!-- Messages will be rendered here dynamically -->
+      </div>
+      
+      <!-- Quick Action Chips -->
+      <div id="chatChips" style="display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 8px; white-space: nowrap; scrollbar-width: none;">
+        <button class="chat-chip" data-text="Concept samjhao: " style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); color: #4f46e5; padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;">📘 Concept samjhao</button>
+        <button class="chat-chip" data-text="Practice question banao: " style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: #059669; padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;">🎯 Practice question banao</button>
+        <button class="chat-chip" data-text="Weak topic revise karo: " style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); color: #d97706; padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;">🔁 Weak topic revise</button>
+        <button class="chat-chip" data-text="Question discuss karo: " style="background: rgba(14, 165, 233, 0.1); border: 1px solid rgba(14, 165, 233, 0.2); color: #0284c7; padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;">❓ Question discuss</button>
+      </div>
+      
+      <!-- Input container -->
+      <form id="chatForm" style="display: flex; gap: 8px;">
+        <input type="text" id="chatInput" placeholder="Write a message..." style="flex: 1; border-radius: 8px; border: 1px solid var(--line, #cbd5e1); padding: 10px 12px; font-size: 13px;" required />
+        <button type="submit" class="ai-btn" style="padding: 10px 20px; font-weight: bold; border-radius: 8px;">Send ➔</button>
+      </form>
+    </div>
+  </div>
 </div>
 
 <!-- ═══════════════ TAB: MOCKS ═══════════════ -->
@@ -4863,6 +4907,7 @@ function saveFastBulk(){
     if(s.avgScore != null) S.setup.avgScore = parseFloat(s.avgScore);
     if(s.cutoff != null) S.setup.cutoff = parseFloat(s.cutoff);
     if(s.date && !s.examYear) S.setup.year = new Date(s.date).getFullYear();
+    if(s.shift) S.setup.shift = s.shift;
   }
   
   if(!parsed.questions.length){
@@ -4979,7 +5024,7 @@ function parseFullText(text){
 }
 
 function isSetupLine(line){
-  return /(?:date|mock|percentile|avgscore|avg_score|avg score|cutoff)\s*[:=]/i.test(line);
+  return /(?:date|mock|percentile|avgscore|avg_score|avg score|cutoff|shift)\s*[:=]/i.test(line);
 }
 
 function parseSetupLine(line){
@@ -4997,6 +5042,7 @@ function parseSetupLine(line){
     else if(['percentile','pctle','perc'].includes(key)) setup.percentile = parseFloat(val)||null;
     else if(['avgscore','averagescore','avg','avgmarks'].includes(key)) setup.avgScore = parseFloat(val)||null;
     else if(['cutoff','co'].includes(key)){ const cm=val.match(/(\d+(?:\.\d+)?)/); setup.cutoff = cm ? parseFloat(cm[1]) : null; }
+    else if(['shift','sf'].includes(key)) setup.shift = val;
   });
   return setup;
 }
@@ -7877,6 +7923,7 @@ function rvParseSetup(text){
   out.totalTime=F('Total_Time')||F('Mock_Duration')||F('Duration');
   out.correct=F('Correct'); out.incorrect=F('Incorrect'); out.unattempted=F('Unattempted');
   out.mockDetail=F('Mock_Detail'); out.extractionDate=F('Extraction_Date');
+  out.shift=F('Shift')||F('Mock_Shift');
   Object.keys(out).forEach(k=>{ if(out[k]==null) delete out[k]; });
   return out;
 }
@@ -8714,6 +8761,31 @@ function mzAttemptsFor(mock,index){
   const key=mzMockKey(mock,index);
   return (S.mockAttempts||[]).filter(a=>String(a.mockId)===key||String(a.mockId)===String(mock&&mock.id)).sort((a,b)=>new Date(a.date||a.id||0)-new Date(b.date||b.id||0));
 }
+
+function detectShift(name) {
+  if (!name) return null;
+  const m = name.match(/shift\s*([1-3])/i);
+  return m ? 'Shift ' + m[1] : null;
+}
+
+function mzSwitchAnalysisTab(tab) {
+  const btnAnalysis = document.getElementById('btnMzAnalysis');
+  const btnSolutions = document.getElementById('btnMzSolutions');
+  const viewAnalysis = document.getElementById('mzAnalysisPanel');
+  const viewSolutions = document.getElementById('mzSolutions');
+
+  if (tab === 'analysis') {
+    if (btnAnalysis) { btnAnalysis.style.background = '#4f46e5'; btnAnalysis.style.color = 'white'; }
+    if (btnSolutions) { btnSolutions.style.background = '#e2e8f0'; btnSolutions.style.color = '#475569'; }
+    if (viewAnalysis) viewAnalysis.style.display = 'block';
+    if (viewSolutions) viewSolutions.style.display = 'none';
+  } else {
+    if (btnAnalysis) { btnAnalysis.style.background = '#e2e8f0'; btnAnalysis.style.color = '#475569'; }
+    if (btnSolutions) { btnSolutions.style.background = '#4f46e5'; btnSolutions.style.color = 'white'; }
+    if (viewAnalysis) viewAnalysis.style.display = 'none';
+    if (viewSolutions) viewSolutions.style.display = 'block';
+  }
+}
 function mzRenderLanding(){
   mzShow('landing');
   const items=(S.mocks||[]).map((m,i)=>({m,i,qs:mzQuestionSet(m)}));
@@ -8728,9 +8800,29 @@ function mzRenderLanding(){
     const duration=parseInt((m.setup||{}).totalTime||m.totalTime)||15;
     const pct=last?Math.max(0,Math.min(100,(parseFloat(last.score)||0)/(parseFloat(last.maxScore)||max||1)*100)):0;
     const shownQ=qs.length||((m.questions||[]).length)||parseInt(m.totalQ)||0;
-    const actions=!qs.length?'<button disabled title="Import question text, options and correct answers to play">⚠ Needs options &amp; answers</button>':last?'<button onclick="mzOpenInstructions('+i+')">↻ Reattempt</button><button class="start" onclick="mzOpenAnalysis('+i+')">▥ Analysis</button>':'<button class="start" onclick="mzOpenInstructions('+i+')">▶ Start Mock</button>';
+    
+    // Support shift detection
+    const examName = m.examName || (m.setup && m.setup.examName) || 'SSC';
+    const year = m.year || (m.setup && m.setup.year) || '';
+    const date = m.date || (m.setup && m.setup.date) || '';
+    const rawShift = m.setup?.shift || m.shift || '';
+    const originalName = m.name || 'Quant Sectional Mock';
+    const shift = rawShift ? rawShift : (detectShift(originalName) || detectShift(m.name) || '');
+    
+    let fullTitle = [examName + (year ? ' ' + year : '')].filter(Boolean).join(' ');
+    if (date) fullTitle += ' · ' + date;
+    if (shift) fullTitle += ' · ' + shift;
+
+    const actions = !qs.length ? '<button disabled title="Import question text, options and correct answers to play">⚠ Needs options &amp; answers</button>' : last ? 
+      '<button onclick="mzOpenInstructions('+i+')">↻ Reattempt</button>' + 
+      '<button class="start" style="background:#059669;" onclick="mzOpenAnalysis('+i+',null,\'solutions\')">📝 Solutions</button>' + 
+      '<button class="start" onclick="mzOpenAnalysis('+i+',null,\'analysis\')">📊 Analysis</button>' : 
+      '<button class="start" onclick="mzOpenInstructions('+i+')">▶ Start Mock</button>';
+
     return '<article class="mz-card"><div class="mz-card-top"></div><div class="mz-card-main"><div class="mz-card-label"><span>QUANTITATIVE APTITUDE</span><b>'+escapeHtml(String(m.year||(m.setup&&m.setup.year)||'SSC'))+'</b></div>'+ 
-      '<h3>'+escapeHtml(m.name||'Quant Sectional Mock')+'</h3><div class="mz-card-meta"><div><b>'+shownQ+'</b><small>Questions</small></div><div><b>'+duration+' min</b><small>Duration</small></div><div><b>'+(qs.length?max.toFixed(max%1?1:0):'—')+'</b><small>Marks</small></div></div>'+ 
+      '<h3>'+escapeHtml(fullTitle)+'</h3>' +
+      '<div class="mz-chip" style="display:inline-block; font-size:10px; background:rgba(99,102,241,0.1); color:#4f46e5; border-radius:12px; padding:2px 8px; margin-top:4px; margin-bottom:10px; font-weight:600;">'+escapeHtml(originalName)+'</div>' +
+      '<div class="mz-card-meta"><div><b>'+shownQ+'</b><small>Questions</small></div><div><b>'+duration+' min</b><small>Duration</small></div><div><b>'+(qs.length?max.toFixed(max%1?1:0):'—')+'</b><small>Marks</small></div></div>'+ 
       '<div class="mz-card-actions">'+actions+'</div></div>'+ 
       (last?'<div class="mz-score-strip"><div class="mz-score-row"><span>Latest score · Attempt '+attempts.length+'</span><b>'+Number(last.score||0).toFixed(1)+' / '+Number(last.maxScore||max).toFixed(1)+'</b></div><div class="mz-score-track"><div class="mz-score-fill" style="width:'+pct.toFixed(1)+'%"></div></div></div>':'')+'</article>';
   }).join('');
@@ -8797,18 +8889,191 @@ function mzAttemptResults(mock,index,a){
   const qs=mzQuestionSet(mock),share=qs.length?Math.round((parseInt(a&&a.timeUsed)||0)/qs.length):0;
   return qs.map(q=>{const selected=(a&&a.answers&&a.answers[q.no])||'',status=!selected?'Unattempted':selected===q.correct?'Correct':'Incorrect';return {qNo:q.no,status,selected,correctOpt:q.correct,questionText:q.text,options:q.options,category:q.category,chapter:q.chapter,topic:q.topic,subtopic:q.subtopic,difficultyLevel:q.difficulty,timeTaken:share,avgTime:q.avgTime,timeDelta:share-(parseInt(q.avgTime)||0),solution:q.solution,formula:q.formula};});
 }
-function mzOpenAnalysis(index,attemptId){
+function mzOpenAnalysis(index,attemptId,initialTab){
   const mock=S.mocks[index];if(!mock)return;const attempts=mzAttemptsFor(mock,index);let a=attempts[attempts.length-1];if(attemptId)a=attempts.find(x=>String(x.id)===String(attemptId))||a;if(!a){showToast('⚠️ Pehle mock attempt karein');return;}mzLastAttempt=a;
   const qs=mzAttemptResults(mock,index,a),topics=getTopicStatsFor(qs).sort((x,y)=>y.total-x.total||x.key.localeCompare(y.key)),marks=mzMarks(mock);
   const totalTime=qs.reduce((n,q)=>n+(parseInt(q.timeTaken)||0),0),totalDelta=qs.reduce((n,q)=>n+(parseInt(q.timeDelta)||0),0),attempted=(parseInt(a.correct)||0)+(parseInt(a.incorrect)||0),attemptRate=qs.length?attempted/qs.length*100:0;
   const storedAccuracy=parseFloat(a.accuracy),attemptAccuracy=!isNaN(storedAccuracy)?storedAccuracy:(attempted?(parseInt(a.correct)||0)/attempted*100:0);
   const diffs={};qs.forEach(q=>{const k=q.difficultyLevel||'Moderate';if(!diffs[k])diffs[k]={n:0,c:0,w:0};diffs[k].n++;if(q.status==='Correct')diffs[k].c++;if(q.status==='Incorrect')diffs[k].w++;});
   const body=g('mzAnalysisBody');if(!body)return;
-  body.innerHTML='<div class="mz-analysis-wrap"><div class="mz-analysis-head"><button onclick="mzBackLanding()">← Mocks</button><div><small>ATTEMPT-SPECIFIC ANALYSIS</small><h2>'+escapeHtml(mock.name||'Quant Mock')+'</h2><small>'+new Date(a.date).toLocaleString()+'</small></div><button onclick="mzOpenInstructions('+index+')">↻ Reattempt</button></div><div class="mz-analysis-body">'+
-    '<div class="mz-analysis-title">Performance Overview</div><div class="mz-analysis-grid">'+mzAnalysisCard(Number(a.score||0).toFixed(1)+' / '+Number(a.maxScore||qs.length*marks.correct).toFixed(1),'Score','#4f46e5')+mzAnalysisCard(attemptAccuracy.toFixed(1)+'%','Accuracy','#16a34a')+mzAnalysisCard(attemptRate.toFixed(1)+'%','Attempt Rate','#7c3aed')+mzAnalysisCard(formatTime(a.timeUsed||totalTime),'Test Time','#0891b2')+mzAnalysisCard(signedTime(totalDelta),'Question Time Δ',totalDelta<=0?'#16a34a':'#ef4444')+'</div>'+ 
-    '<div class="mz-analysis-title">Topic-wise Analysis</div><div class="twrap"><table class="mz-analysis-table"><thead><tr><th>Category / Chapter</th><th>Qs</th><th>Correct</th><th>Wrong</th><th>Accuracy</th><th>Avg Impact</th><th>Avg Δ</th><th>Flag</th></tr></thead><tbody>'+topics.map(t=>{const f=topicFlagFor(t,topics);return '<tr><td><b>'+escapeHtml(t.key)+'</b></td><td>'+t.total+'</td><td style="color:#16a34a">'+t.correct+'</td><td style="color:#ef4444">'+t.incorrect+'</td><td>'+t.accuracy+(t.accuracy==='—'?'':'%')+'</td><td>'+(t.avgImpact>=0?'+':'')+t.avgImpact.toFixed(2)+'</td><td>'+signedTime(t.avgDt)+'</td><td><span class="season-flag '+f.cls+'" title="'+escapeHtml(f.title)+'">'+f.icon+'</span></td></tr>';}).join('')+'</tbody></table></div>'+ 
-    '<div class="mz-analysis-title">Difficulty Performance</div><div class="mz-analysis-grid">'+Object.entries(diffs).map(([k,d])=>mzAnalysisCard((d.c+d.w?d.c/(d.c+d.w)*100:0).toFixed(1)+'%',escapeHtml(k)+' · '+d.n+' Qs',d.c>=d.w?'#16a34a':'#ef4444')).join('')+'</div>'+ 
-    '<div class="mz-analysis-title">Question-wise Review &amp; Solutions</div><div class="mz-review-list">'+qs.map((q,i)=>mzReviewHtml(q,i)).join('')+'</div></div></div>';mzShow('analysis');
+
+  const cutoff = parseFloat(mock.setup?.cutoff || mock.cutoff || 0);
+  const avgScore = parseFloat(mock.setup?.avgScore || mock.avgScore || 0);
+  const score = parseFloat(a.score || 0);
+  const maxScore = parseFloat(a.maxScore || qs.length * marks.correct || 50);
+  const scorePct = maxScore > 0 ? (score / maxScore * 100) : 0;
+  const percentile = mock.setup?.percentile || a.percentile || mock.percentile || '—';
+
+  const aboveBelowBadge = score >= cutoff 
+    ? '<span style="background:#d1fae5; color:#065f46; font-size:11px; padding:3px 8px; border-radius:12px; font-weight:bold; margin-left:10px;">🏆 Passed Cutoff</span>'
+    : '<span style="background:#fee2e2; color:#991b1b; font-size:11px; padding:3px 8px; border-radius:12px; font-weight:bold; margin-left:10px;">⚠️ Failed Cutoff</span>';
+
+  const maxRange = Math.max(maxScore, score, cutoff, avgScore) || 50;
+  const scorePos = Math.max(0, Math.min(100, (score / maxRange) * 100));
+  const cutoffPos = Math.max(0, Math.min(100, (cutoff / maxRange) * 100));
+  const avgPos = Math.max(0, Math.min(100, (avgScore / maxRange) * 100));
+
+  const scoreBarHtml = `
+  <div style="background:var(--card-bg, #fff); border:1px solid var(--line, #e2e8f0); border-radius:12px; padding:16px; margin-bottom:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+      <span style="font-weight:bold; font-size:13px; color:var(--tx-1, #1e293b);">Score Progress vs Benchmarks</span>
+      <div style="display:flex; align-items:center;">
+        <span style="font-weight:bold; font-size:14px; color:#4f46e5;">${score.toFixed(1)} / ${maxScore.toFixed(1)} (${scorePct.toFixed(1)}%)</span>
+        ${aboveBelowBadge}
+      </div>
+    </div>
+    <div style="position:relative; margin:25px 0 25px; height:12px; background:#e2e8f0; border-radius:6px;">
+      <div style="width: ${scorePos}%; height:100%; background: #4f46e5; border-radius:6px;"></div>
+      ${cutoff > 0 ? `
+      <div style="position:absolute; left:${cutoffPos}%; top:-10px; width:3px; height:32px; background:#ef4444; border-radius:2px;" title="Cutoff: ${cutoff}">
+        <span style="position:absolute; bottom:34px; left:-25px; font-size:10px; color:#ef4444; font-weight:bold; white-space:nowrap; background:#fee2e2; padding:1px 4px; border-radius:4px; border:1px solid #fca5a5;">Cutoff: ${cutoff}</span>
+      </div>
+      ` : ''}
+      ${avgScore > 0 ? `
+      <div style="position:absolute; left:${avgPos}%; top:-10px; width:3px; height:32px; background:#f59e0b; border-radius:2px;" title="Average Score: ${avgScore}">
+        <span style="position:absolute; top:34px; left:-20px; font-size:10px; color:#d97706; font-weight:bold; white-space:nowrap; background:#fef3c7; padding:1px 4px; border-radius:4px; border:1px solid #fde68a;">Avg: ${avgScore}</span>
+      </div>
+      ` : ''}
+    </div>
+  </div>`;
+
+  const tabsHtml = `
+  <div class="mz-tab-buttons" style="display:flex; gap:12px; margin: 15px 0 20px;">
+    <button id="btnMzAnalysis" class="mz-btn-big" onclick="mzSwitchAnalysisTab('analysis')" style="flex:1; padding:12px; font-weight:bold; border-radius:8px; border:none; background:#4f46e5; color:white; cursor:pointer; font-size:13px;">📊 Full Analysis</button>
+    <button id="btnMzSolutions" class="mz-btn-big" onclick="mzSwitchAnalysisTab('solutions')" style="flex:1; padding:12px; font-weight:bold; border-radius:8px; border:none; background:#e2e8f0; color:#475569; cursor:pointer; font-size:13px;">📝 Question-wise Review & Solutions</button>
+  </div>`;
+
+  const analysisPanelHtml = `
+  <div id="mzAnalysisPanel">
+    ${scoreBarHtml}
+    
+    <div class="mz-analysis-title" style="margin-top:20px;">Key Vitals</div>
+    <div class="mz-analysis-grid">
+      ${mzAnalysisCard(Number(a.score||0).toFixed(1)+' / '+Number(a.maxScore||qs.length*marks.correct).toFixed(1),'Score','#4f46e5')}
+      ${mzAnalysisCard(attemptAccuracy.toFixed(1)+'%','Accuracy','#16a34a')}
+      ${mzAnalysisCard(attemptRate.toFixed(1)+'%','Attempt Rate','#7c3aed')}
+      ${mzAnalysisCard(formatTime(a.timeUsed||totalTime),'Test Time','#0891b2')}
+      ${mzAnalysisCard(signedTime(totalDelta),'Question Time Δ',totalDelta<=0?'#16a34a':'#ef4444')}
+      ${mzAnalysisCard(percentile + (typeof percentile === 'number' ? '%' : ''),'Percentile','#ec4899')}
+    </div>
+
+    <div class="mz-charts-row" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin:24px 0 20px;">
+      <div class="card" style="padding:16px; background:var(--card-bg, #fff); border:1px solid var(--line, #e2e8f0); border-radius:12px;">
+        <div style="font-weight:bold; font-size:13px; margin-bottom:12px; color:var(--tx-1, #1e293b);">Status Doughnut</div>
+        <div style="height:200px; position:relative;"><canvas id="mzStatusDoughnut"></canvas></div>
+      </div>
+      <div class="card" style="padding:16px; background:var(--card-bg, #fff); border:1px solid var(--line, #e2e8f0); border-radius:12px;">
+        <div style="font-weight:bold; font-size:13px; margin-bottom:12px; color:var(--tx-1, #1e293b);">Difficulty Accuracy</div>
+        <div style="height:200px; position:relative;"><canvas id="mzDiffBar"></canvas></div>
+      </div>
+    </div>
+
+    <div class="mz-analysis-title" style="margin-top:20px;">Topic-wise Analysis</div>
+    <div class="twrap" style="margin-bottom:20px;">
+      <table class="mz-analysis-table">
+        <thead>
+          <tr>
+            <th>Category / Chapter</th>
+            <th>Qs</th>
+            <th>Correct</th>
+            <th>Wrong</th>
+            <th>Accuracy</th>
+            <th>Avg Impact</th>
+            <th>Avg Δ</th>
+            <th>Flag</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${topics.map(t=>{
+            const f=topicFlagFor(t,topics);
+            return '<tr><td><b>'+escapeHtml(t.key)+'</b></td><td>'+t.total+'</td><td style="color:#16a34a">'+t.correct+'</td><td style="color:#ef4444">'+t.incorrect+'</td><td>'+t.accuracy+(t.accuracy==='—'?'':'%')+'</td><td>'+(t.avgImpact>=0?'+':'')+t.avgImpact.toFixed(2)+'</td><td>'+signedTime(t.avgDt)+'</td><td><span class="season-flag '+f.cls+'" title="'+escapeHtml(f.title)+'">'+f.icon+'</span></td></tr>';
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+
+  const solutionsPanelHtml = `
+  <div id="mzSolutions" style="display:none;">
+    <div class="mz-analysis-title" style="margin-top:10px;">Question-wise Review &amp; Solutions</div>
+    <div class="mz-review-list text-left">
+      ${qs.map((q,i)=>mzReviewHtml(q,i)).join('')}
+    </div>
+  </div>`;
+
+  body.innerHTML = `
+  <div class="mz-analysis-wrap">
+    <div class="mz-analysis-head">
+      <button onclick="mzBackLanding()">← Mocks</button>
+      <div>
+        <small>ATTEMPT-SPECIFIC ANALYSIS</small>
+        <h2>${escapeHtml(mock.name||'Quant Mock')}</h2>
+        <small>${new Date(a.date).toLocaleString()}</small>
+      </div>
+      <button onclick="mzOpenInstructions(${index})">↻ Reattempt</button>
+    </div>
+    <div class="mz-analysis-body">
+      ${tabsHtml}
+      ${analysisPanelHtml}
+      ${solutionsPanelHtml}
+    </div>
+  </div>`;
+
+  mzShow('analysis');
+  mzSwitchAnalysisTab(initialTab || 'analysis');
+
+  // Instantiate Chart.js charts
+  setTimeout(() => {
+    try {
+      const ctxDoughnut = document.getElementById('mzStatusDoughnut');
+      if (ctxDoughnut && window.Chart) {
+        new window.Chart(ctxDoughnut, {
+          type: 'doughnut',
+          data: {
+            labels: ['Correct', 'Incorrect', 'Unattempted'],
+            datasets: [{
+              data: [a.correct || 0, a.incorrect || 0, a.unattempted || 0],
+              backgroundColor: ['#16a34a', '#ef4444', '#cbd5e1']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
+          }
+        });
+      }
+
+      const ctxBar = document.getElementById('mzDiffBar');
+      if (ctxBar && window.Chart) {
+        const diffLabels = Object.keys(diffs);
+        const diffAccuracies = diffLabels.map(k => {
+          const d = diffs[k];
+          return d.c + d.w ? parseFloat((d.c / (d.c + d.w) * 100).toFixed(1)) : 0;
+        });
+        new window.Chart(ctxBar, {
+          type: 'bar',
+          data: {
+            labels: diffLabels,
+            datasets: [{
+              label: 'Accuracy %',
+              data: diffAccuracies,
+              backgroundColor: '#4f46e5',
+              borderRadius: 6
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { min: 0, max: 100, ticks: { font: { size: 10 } } }, x: { ticks: { font: { size: 10 } } } },
+            plugins: { legend: { display: false } }
+          }
+        });
+      }
+    } catch (e) {
+      console.warn('Chart creation failed:', e);
+    }
+  }, 100);
 }
 function mzAnalysisCard(v,l,c){return '<div class="mz-analysis-card" style="--c:'+c+'"><b>'+v+'</b><small>'+l+'</small></div>';}
 function mzAnswerText(q,key){const o=(q.options||[]).find(x=>String(x.k)===String(key));return o?o.k+'. '+o.v:(key||'Not answered');}
@@ -9133,6 +9398,7 @@ function rvUniSave(){
   if(su.percentile) S.setup.percentile=parseFloat(String(su.percentile).replace('%',''))||S.setup.percentile;
   if(su.avgMarks) S.setup.avgScore=parseFloat(su.avgMarks)||S.setup.avgScore;
   if(su.cutoff) S.setup.cutoff=parseFloat(String(su.cutoff).split('-')[0])||S.setup.cutoff;
+  if(su.shift) S.setup.shift=su.shift;
   const importedTotalQ=su.attempted&&String(su.attempted).includes('/')?parseInt(String(su.attempted).split('/')[1]):parseInt(S.setup.totalQ);
   if(su.totalTime){
     const tm=String(su.totalTime).match(/\d+(?:\.\d+)?/);
@@ -9392,6 +9658,7 @@ else rvBindEvents();
 </nav>
 <div id="dockSheet">
   <button class="sheet-b" data-dock="settings"  onclick="dockGo('settings')"><span class="di">⚙️</span>Settings</button>
+  <button class="sheet-b" data-dock="chat"      onclick="dockGo('chat')"><span class="di">💬</span>Chat</button>
   <button class="sheet-b" data-dock="mocks"     onclick="dockGo('mocks')"><span class="di">📝</span>Mocks</button>
   <button class="sheet-b" data-dock="pattern"   onclick="dockGo('pattern')"><span class="di">📊</span>Season</button>
   <button class="sheet-b" data-dock="data"      onclick="dockGo('data')"><span class="di">💾</span>Data</button>
@@ -9423,4 +9690,7 @@ window.QMT = {
 <script src="./js/improvements.js"></script>
 <script type="module" src="./js/firebase-auth.js"></script>
 <script type="module" src="./js/ai.js"></script>
+<script type="module" src="./js/chat.js"></script>
+<!-- Floating Chat Button -->
+<button id="floatingChatBtn" style="position: fixed; right: 20px; bottom: 85px; z-index: 150; width: 56px; height: 56px; border-radius: 50%; background: #4f46e5; color: white; border: none; box-shadow: 0 4px 16px rgba(79, 70, 229, 0.4); font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s;" title="Open AI Chat">💬</button>
 </html>
