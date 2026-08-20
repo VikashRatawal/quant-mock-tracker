@@ -9,6 +9,7 @@
     { id: 'entry', icon: '📝', label: 'Entry / Import' },
     { id: 'analytics', icon: '📈', label: 'Analytics' },
     { id: 'revision', icon: '📚', label: 'Revision' },
+    { id: 'chat', icon: '💬', label: 'AI Chat' },
     { id: 'mocks', icon: '🎯', label: 'Play Mocks' },
     { id: 'pattern', icon: '📊', label: 'Season Pattern' },
     { id: 'data', icon: '💾', label: 'Data / Backup' },
@@ -462,7 +463,7 @@
         if (help) help.classList.toggle('open');
         return;
       }
-      if (/^[1-8]$/.test(event.key) && !event.altKey) {
+      if (/^[1-9]$/.test(event.key) && !event.altKey) {
         const tab = TABS[Number(event.key) - 1];
         if (tab && typeof switchTab === 'function') switchTab(tab.id);
       }

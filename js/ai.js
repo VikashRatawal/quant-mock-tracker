@@ -197,20 +197,175 @@ function esc(value) {
   }[char]));
 }
 
-function markdown(value) {
-  let html = esc(value);
-  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/^\s*[-*]\s+(.+)$/gm, '<li>$1</li>')
-    .replace(/^\s*\d+\.\s+(.+)$/gm, '<li>$1</li>')
-    .replace(/\n{2,}/g, '<br><br>')
-    .replace(/\n/g, '<br>');
-  html = html.replace(/(<li>.*?<\/li>(?:<br>)?)+/gs, match => '<ul>' + match.replace(/<br>/g, '') + '</ul>');
+function parseMarkdownTables(text) {
+  const lines = text.split('\n');
+  let inTable = false;
+  let tableHeaders = [];
+  let tableRows = [];
+  let result = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line.startsWith('|') && line.endsWith('|')) {
+      if (!inTable) {
+        const nextLine = lines[i + 1] ? lines[i + 1].trim() : '';
+        if (nextLine.startsWith('|') && nextLine.endsWith('|') && /^[|\s\-:.]+$/.test(nextLine)) {
+          inTable = true;
+          tableHeaders = line.split('|').map(s => s.trim()).filter((s, idx, arr) => idx > 0 && idx < arr.length - 1);
+          i++; // Skip the separator line
+          tableRows = [];
+          continue;
+        }
+      }
+      if (inTable) {
+        const row = line.split('|').map(s => s.trim()).filter((s, idx, arr) => idx > 0 && idx < arr.length - 1);
+        tableRows.push(row);
+        continue;
+      }
+    }
+
+    if (inTable && !(line.startsWith('|') && line.endsWith('|'))) {
+      result.push(generateHtmlTable(tableHeaders, tableRows));
+      inTable = false;
+    }
+
+    result.push(lines[i]);
+  }
+
+  if (inTable) {
+    result.push(generateHtmlTable(tableHeaders, tableRows));
+  }
+
+  return result.join('\n');
+}
+
+function generateHtmlTable(headers, rows) {
+  let html = '<div class="twrap"><table class="dtable" style="table-layout: auto; min-width: 100%; margin: 12px 0;">';
+  html += '<thead><tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr></thead>';
+  html += '<tbody>' + rows.map(row => '<tr>' + row.map(cell => `<td>${cell}</td>`).join('') + '</tr>').join('') + '</tbody>';
+  html += '</table></div>';
   return html;
 }
+
+function markdown(value) {
+  if (!value) return '';
+  let text = esc(value);
+
+  text = parseMarkdownTables(text);
+
+  const lines = text.split('\n');
+  let inUl = false;
+  let inOl = false;
+  const processedLines = [];
+
+  for (let line of lines) {
+    const trimmed = line.trim();
+
+    if (trimmed === '---' || trimmed === '***' || trimmed === '___') {
+      if (inUl) { processedLines.push('</ul>'); inUl = false; }
+      if (inOl) { processedLines.push('</ol>'); inOl = false; }
+      processedLines.push('<hr style="margin:12px 0; border:0; border-top:1px solid var(--line, #cbd5e1);">');
+      continue;
+    }
+
+    if (trimmed.startsWith('### ')) {
+      if (inUl) { processedLines.push('</ul>'); inUl = false; }
+      if (inOl) { processedLines.push('</ol>'); inOl = false; }
+      processedLines.push(`<h3>${trimmed.slice(4)}</h3>`);
+      continue;
+    }
+    if (trimmed.startsWith('## ')) {
+      if (inUl) { processedLines.push('</ul>'); inUl = false; }
+      if (inOl) { processedLines.push('</ol>'); inOl = false; }
+      processedLines.push(`<h2>${trimmed.slice(3)}</h2>`);
+      continue;
+    }
+    if (trimmed.startsWith('# ')) {
+      if (inUl) { processedLines.push('</ul>'); inUl = false; }
+      if (inOl) { processedLines.push('</ol>'); inOl = false; }
+      processedLines.push(`<h1>${trimmed.slice(2)}</h1>`);
+      continue;
+    }
+
+    const ulMatch = line.match(/^(\s*)[-*]\s+(.+)$/);
+    if (ulMatch) {
+      if (inOl) { processedLines.push('</ol>'); inOl = false; }
+      if (!inUl) { processedLines.push('<ul>'); inUl = true; }
+      processedLines.push(`<li>${ulMatch[2]}</li>`);
+      continue;
+    }
+
+    const olMatch = line.match(/^(\s*)\d+\.\s+(.+)$/);
+    if (olMatch) {
+      if (inUl) { processedLines.push('</ul>'); inUl = false; }
+      if (!inOl) { processedLines.push('<ol>'); inOl = true; }
+      processedLines.push(`<li>${olMatch[2]}</li>`);
+      continue;
+    }
+
+    if (inUl && trimmed !== '') {
+      processedLines.push('</ul>');
+      inUl = false;
+    }
+    if (inOl && trimmed !== '') {
+      processedLines.push('</ol>');
+      inOl = false;
+    }
+
+    processedLines.push(line);
+  }
+
+  if (inUl) processedLines.push('</ul>');
+  if (inOl) processedLines.push('</ol>');
+
+  let html = processedLines.join('\n');
+
+  html = html
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/_(.+?)_/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>');
+
+  if (!window.katex) {
+    html = html
+      .replace(/\$\$(.+?)\$\$/g, '$1')
+      .replace(/\$(.+?)\$/g, '$1');
+  }
+
+  html = html
+    .replace(/\n{2,}/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+
+  html = html
+    .replace(/<(ul|ol|li|h1|h2|h3|table|thead|tbody|tr|th|td|div|hr)([^>]*)><br>/gi, '<$1$2>')
+    .replace(/<\/(ul|ol|li|h1|h2|h3|table|thead|tbody|tr|th|td|div|hr)><br>/gi, '</$1>');
+
+  return html;
+}
+
+function renderMathInElementIfPossible(element) {
+  if (window.renderMathInElement && window.katex) {
+    try {
+      window.renderMathInElement(element, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+    } catch (e) {
+      console.warn('KaTeX render error:', e);
+    }
+  }
+}
+
+window.markdown = markdown;
+window.renderMathInElementIfPossible = renderMathInElementIfPossible;
+window.askAI = askAI;
+window.requireApiKey = requireApiKey;
+window.questionContext = questionContext;
+window.questionByNo = questionByNo;
+window.esc = esc;
 
 function state() {
   return window.QMT?.getState?.() || { questions: [], setup: {} };
@@ -354,8 +509,11 @@ async function renderAIResponse(title, prompt, button) {
   openModal(title, '<div class="ai-loading">🤖 AI soch raha hai...</div>');
   try {
     const answer = await askAI(prompt);
-    document.getElementById('aiModalBody').innerHTML =
-      `<div class="ai-response">${markdown(answer || 'AI response nahi mila.')}</div>`;
+    const body = document.getElementById('aiModalBody');
+    if (body) {
+      body.innerHTML = `<div class="ai-response">${markdown(answer || 'AI response nahi mila.')}</div>`;
+      if (window.renderMathInElementIfPossible) window.renderMathInElementIfPossible(body);
+    }
   } catch (error) {
     console.error('AI feature:', error);
     document.getElementById('aiModalBody').innerHTML =
@@ -375,6 +533,7 @@ Analyze this incorrect question and provide exactly these headings:
 4. SSC exam trap
 5. Next practice action
 Use simple Hindi/English mix, concise and actionable. Do not invent missing options.
+IMPORTANT: Har formula LaTeX format me $...$ (inline) ya $$...$$ (block) delimiters me likho.
 QUESTION DATA:
 ${questionContext(question)}`;
 }
@@ -382,6 +541,7 @@ ${questionContext(question)}`;
 function askPrompt(question, preset) {
   return `You are an SSC Quant tutor. Reply in ${AI.settings.language}. Keep the answer practical,
 clear and concise. The learner selected this request: "${preset}".
+IMPORTANT: Har formula LaTeX format me $...$ (inline) ya $$...$$ (block) delimiters me likho.
 Question data:
 ${questionContext(question)}
 Explain with correct math and use the question's existing options/answer when available.`;
@@ -697,6 +857,7 @@ Create a personalized plan from this analytics JSON. Use exactly these headings:
 ## Speed vs accuracy plan
 ## Priority practice list
 Give concrete counts and short actions; never invent question numbers not present.
+IMPORTANT: Har formula LaTeX format me $...$ (inline) ya $$...$$ (block) delimiters me likho.
 ANALYTICS:
 ${JSON.stringify(payload, null, 2)}`;
     const answer = await askAI(prompt);
@@ -704,8 +865,11 @@ ${JSON.stringify(payload, null, 2)}`;
     if (preview) {
       preview.classList.remove('hidden');
       preview.innerHTML = `<div class="ai-response">${markdown(answer)}</div>`;
+      if (window.renderMathInElementIfPossible) window.renderMathInElementIfPossible(preview);
     }
     openModal('🧠 Personal Revision Planner', `<div class="ai-response">${markdown(answer)}</div>`);
+    const modalBody = document.getElementById('aiModalBody');
+    if (modalBody && window.renderMathInElementIfPossible) window.renderMathInElementIfPossible(modalBody);
   } catch (error) {
     console.error(error);
     toast('⚠️ Study plan generate nahi hua');
@@ -753,7 +917,8 @@ function addQuestionButtons() {
     const wrap = document.createElement('span');
     wrap.className = 'ai-card-actions';
     wrap.innerHTML = `<button class="rv2-mini-btn ai-action" data-ai-action="ask" data-no="${esc(no)}">🤖 Ask AI</button>` +
-      (question.status === 'Incorrect' ? `<button class="rv2-mini-btn ai-action" data-ai-action="analysis" data-no="${esc(no)}">🔍 AI Analysis</button>` : '');
+      (question.status === 'Incorrect' ? `<button class="rv2-mini-btn ai-action" data-ai-action="analysis" data-no="${esc(no)}">🔍 AI Analysis</button>` : '') +
+      `<button class="rv2-mini-btn ai-action" data-ai-action="discuss" data-no="${esc(no)}" style="margin-left: 4px;">💬 Discuss</button>`;
     actions.appendChild(wrap);
   });
   document.querySelectorAll('.rv2-qr-card').forEach(card => {
@@ -788,6 +953,13 @@ function bindActions() {
     const no = button.dataset.no;
     if (button.dataset.aiAction === 'videos') findVideos(no, button);
     else if (button.dataset.aiAction === 'analysis') showQuestionAI(no, 'analysis', '', button);
+    else if (button.dataset.aiAction === 'discuss') {
+      if (window.QmtChat && typeof window.QmtChat.discussQuestion === 'function') {
+        window.QmtChat.discussQuestion(no);
+      } else {
+        toast('⚠️ Chat module loading...');
+      }
+    }
     else showAskModal(no, button);
   }, true);
 }
