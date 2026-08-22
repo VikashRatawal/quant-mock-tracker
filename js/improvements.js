@@ -4,6 +4,25 @@
 
   const GOAL_KEY = 'qmt_daily_goal_v1';
   const FOCUS_DONE_KEY = 'qmt_focus_done_v1';
+
+  function subjectSlug() {
+    return (window.QMTSubjects && typeof window.QMTSubjects.getSubjectSlug === 'function')
+      ? window.QMTSubjects.getSubjectSlug() : 'maths';
+  }
+  function subjectKey(base) { return base + '_' + subjectSlug(); }
+  function loadSubjectJSON(base, fallback) {
+    const scoped = subjectKey(base);
+    const value = loadJSON(scoped, null);
+    if (value !== null) return value;
+    if (subjectName() === 'Maths') {
+      const legacy = loadJSON(base, null);
+      if (legacy !== null) { saveJSON(scoped, legacy); return legacy; }
+    }
+    return fallback;
+  }
+  function subjectName() {
+    return typeof window.qmtSubjectName === 'function' ? window.qmtSubjectName() : 'Maths';
+  }
   const TABS = [
     { id: 'home', icon: '🏠', label: 'Home' },
     { id: 'entry', icon: '📝', label: 'Entry / Import' },
@@ -94,7 +113,7 @@
   }
 
   function dueQuestions(limit) {
-    const done = loadJSON(FOCUS_DONE_KEY, { date: todayKey(), ids: [] });
+    const done = loadSubjectJSON(FOCUS_DONE_KEY, { date: todayKey(), ids: [] });
     if (done.date !== todayKey()) { done.date = todayKey(); done.ids = []; }
     const items = [];
     const seen = new Set();
@@ -111,7 +130,7 @@
           mockName: mock.name || 'Mock',
           date: mock.date,
           qNo: q.qNo || q.no,
-          topic: q.topic || q.chapter || q.category || 'Quant',
+          topic: q.topic || q.chapter || q.category || subjectName(),
           status: q.status,
           overtime,
           done: done.ids.indexOf(id) >= 0
@@ -123,11 +142,11 @@
   }
 
   function goalState() {
-    const goal = loadJSON(GOAL_KEY, { date: todayKey(), target: 8, done: 0 });
+    const goal = loadSubjectJSON(GOAL_KEY, { date: todayKey(), target: 8, done: 0 });
     if (goal.date !== todayKey()) {
       goal.date = todayKey();
       goal.done = 0;
-      saveJSON(GOAL_KEY, goal);
+      saveJSON(subjectKey(GOAL_KEY), goal);
     }
     return goal;
   }
@@ -253,7 +272,7 @@
     if (!mock) return toast('⚠️ Mock nahi mila');
     if (typeof loadMock === 'function') {
       const setup = mock.setup || {};
-      state().setup = Object.assign({}, setup);
+      state().setup = Object.assign({}, setup, { subject: subjectName() });
       state().questions = [...(mock.questions || [])];
       if (typeof saveToStorage === 'function') saveToStorage();
       if (typeof renderProgress === 'function') renderProgress();
@@ -286,14 +305,14 @@
         return;
       }
       if (btn.dataset.hfDue) {
-        const done = loadJSON(FOCUS_DONE_KEY, { date: todayKey(), ids: [] });
+        const done = loadSubjectJSON(FOCUS_DONE_KEY, { date: todayKey(), ids: [] });
         if (done.date !== todayKey()) { done.date = todayKey(); done.ids = []; }
         if (done.ids.indexOf(btn.dataset.hfDue) < 0) {
           done.ids.push(btn.dataset.hfDue);
-          saveJSON(FOCUS_DONE_KEY, done);
+          saveJSON(subjectKey(FOCUS_DONE_KEY), done);
           const goal = goalState();
           goal.done = Math.min(goal.target, goal.done + 1);
-          saveJSON(GOAL_KEY, goal);
+          saveJSON(subjectKey(GOAL_KEY), goal);
         }
         openMock(btn.dataset.mock, 'revision');
         renderHomeFocus();
@@ -514,6 +533,9 @@
     }
     window.renderHomeFocus = renderHomeFocus;
     window.openCommandPalette = openCommand;
+    window.addEventListener('qmt-subject-change', function () {
+      renderHomeFocus();
+    });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);

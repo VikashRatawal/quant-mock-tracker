@@ -1,6 +1,6 @@
 {
-  "name": "Quant Mock Tracker",
-  "short_name": "Quant Tracker",
+  "name": "Multi-Subject Mock Tracker",
+  "short_name": "Mock Tracker",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

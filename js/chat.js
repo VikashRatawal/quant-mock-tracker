@@ -1,6 +1,14 @@
 // js/chat.js
 const CHAT_HISTORY_KEY = 'qmt_chat_history_v1';
 
+function chatSubjectName() {
+  return typeof window.qmtSubjectName === 'function' ? window.qmtSubjectName() : 'Maths';
+}
+function chatHistoryKey() {
+  const slug = typeof window.qmtSubjectSlug === 'function' ? window.qmtSubjectSlug() : 'maths';
+  return CHAT_HISTORY_KEY + '_' + slug;
+}
+
 const Chat = {
   history: [],
   
@@ -8,11 +16,22 @@ const Chat = {
     this.loadHistory();
     this.bindEvents();
     this.renderHistory();
+    window.addEventListener('qmt-subject-change', () => {
+      this.loadHistory();
+      this.renderHistory();
+    });
   },
 
   loadHistory() {
     try {
-      this.history = JSON.parse(localStorage.getItem(CHAT_HISTORY_KEY)) || [];
+      const scopedKey = chatHistoryKey();
+      let raw = localStorage.getItem(scopedKey);
+      if (!raw && chatSubjectName() === 'Maths') {
+        // Preserve the pre-subject chat once while moving the app to scoped data.
+        raw = localStorage.getItem(CHAT_HISTORY_KEY);
+        if (raw) localStorage.setItem(scopedKey, raw);
+      }
+      this.history = raw ? JSON.parse(raw) : [];
     } catch (e) {
       this.history = [];
     }
@@ -20,7 +39,7 @@ const Chat = {
 
   saveHistory() {
     try {
-      localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(this.history));
+      localStorage.setItem(chatHistoryKey(), JSON.stringify(this.history));
     } catch (e) {}
   },
 
@@ -141,7 +160,7 @@ const Chat = {
       const recentHistory = this.history.slice(-10);
       const language = (window.AI && window.AI.settings && window.AI.settings.language) || 'Hinglish';
       
-      const systemPrompt = `You are an SSC Quant tutor and study coach. Reply in ${language}.
+      const systemPrompt = `You are an SSC ${chatSubjectName()} tutor and study coach. Reply in ${language}.
 Always reply concisely, practically, and support your explanation with correct mathematics.
 Har formula LaTeX format me $...$ (inline) ya $$...$$ (block) delimiters me likho.
 Here is the chat history:`;

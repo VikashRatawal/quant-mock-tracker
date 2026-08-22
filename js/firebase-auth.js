@@ -142,14 +142,21 @@ function showApp(user) {
     gate.classList.add('auth-hidden');
     gate.setAttribute('aria-hidden', 'true');
   }
-  const userBox = $('authUser');
-  const email = $('authEmail');
-  const avatar = $('authAvatar');
-  if (userBox) userBox.classList.remove('hidden');
-  if (email) email.textContent = user?.email || user?.displayName || 'Signed in';
+  // The profile/logout surface intentionally lives in Settings, not the header.
+  const profile = $('authSettingsProfile');
+  const name = $('authSettingsName');
+  const email = $('authSettingsEmail');
+  const avatar = $('authSettingsAvatar');
+  if (profile) profile.classList.remove('hidden');
+  if (name) name.textContent = user?.displayName || user?.email || 'Signed in';
+  if (email) email.textContent = user?.email || 'Signed in account';
   if (avatar) {
+    avatar.replaceChildren();
     if (user?.photoURL) {
-      avatar.innerHTML = `<img src="${user.photoURL}" alt="" style="width:100%;height:100%;border-radius:50%;">`;
+      const image = document.createElement('img');
+      image.src = user.photoURL;
+      image.alt = '';
+      avatar.appendChild(image);
     } else {
       avatar.textContent = (user?.displayName || user?.email || 'U').charAt(0).toUpperCase();
     }
@@ -164,8 +171,8 @@ function showGate() {
     gate.classList.remove('auth-hidden');
     gate.setAttribute('aria-hidden', 'false');
   }
-  const userBox = $('authUser');
-  if (userBox) userBox.classList.add('hidden');
+  const profile = $('authSettingsProfile');
+  if (profile) profile.classList.add('hidden');
   window.dispatchEvent(new CustomEvent('qmt-auth-state', { detail: null }));
 }
 
