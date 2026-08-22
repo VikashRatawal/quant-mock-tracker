@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta name="description" content="SSC Quant mock tracker — import mocks, analyse mistakes, revise shortcuts, and replay sectional tests."/>
+<meta name="description" data-subject-template="SSC {{subject}} mock tracker — import mocks, analyse mistakes, revise shortcuts, and replay sectional tests." content="SSC Maths mock tracker — import mocks, analyse mistakes, revise shortcuts, and replay sectional tests."/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"/>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
-<title>🧮 Quant Mock Tracker</title>
+<title data-subject-template="{{subject}} Mock Tracker">Maths Mock Tracker</title>
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -24,6 +24,9 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+<script src="./js/subject-engine.js"></script>
+<script src="./js/view-controls.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 
@@ -2499,12 +2502,6 @@ body.dark .auth-actions button.secondary{background:#334155;color:#c4b5fd}
 body.dark .auth-google{background:#0f172a;border-color:#475569;color:#e2e8f0}
 .auth-reset{display:block;border:0;background:none;color:#6366f1;margin:8px auto 0;font-size:12px}
 .auth-msg{text-align:center;min-height:18px;color:#ef4444;font-size:11px;font-weight:700;margin-top:8px}
-#authUser{display:flex;align-items:center;gap:8px;max-width:230px}
-#authAvatar{width:30px;height:30px;border-radius:50%;object-fit:cover;background:#e0e7ff;color:#4f46e5;display:grid;place-items:center;font-size:12px;font-weight:900}
-#authEmail{max-width:135px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#64748b;font-weight:700}
-body.dark #authEmail{color:#cbd5e1}
-#authLogout{border:1px solid #fecaca;background:#fff1f2;color:#dc2626;border-radius:9px;padding:7px 9px;font-size:11px;font-weight:800;cursor:pointer}
-body.dark #authLogout{background:#450a0a;border-color:#7f1d1d;color:#fca5a5}
 .ai-card{border-top:3px solid #8b5cf6}
 .ai-title{font-size:15px;font-weight:900;color:#7c3aed}
 body.dark .ai-title{color:#c4b5fd}
@@ -2539,7 +2536,7 @@ body.dark .ai-preset{background:#312e81;color:#ddd6fe;border-color:#6d28d9}
 .ai-loading{color:#7c3aed;font-weight:800;padding:16px;text-align:center}
 .ai-video-meta{font-size:10px;color:#64748b}
 body.dark .ai-video-meta{color:#94a3b8}
-@media(max-width:640px){#authUser{max-width:145px}#authEmail{display:none}.auth-card{padding:20px}.ai-modal-card{padding:16px}}
+@media(max-width:640px){.auth-card{padding:20px}.ai-modal-card{padding:16px}}
 
 
 /* ═══ TODAY FOCUS + COMMAND PALETTE + BANNERS ═══ */
@@ -2612,6 +2609,91 @@ body.dark #helpSheet kbd{background:#334155;}
   cursor:pointer;font-size:16px;}
 @media(max-width:640px){.hf-grid{grid-template-columns:1fr;}}
 
+
+/* ══════════ MULTI-SUBJECT + VIEW CONTROLS v4 ══════════ */
+.top-bar-content{gap:14px;}
+.top-bar-brand{display:flex;align-items:center;gap:10px;min-width:0;}
+.top-bar-brand h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.subject-select{appearance:none;-webkit-appearance:none;min-width:118px;max-width:145px;padding:9px 30px 9px 12px!important;
+  border:1px solid var(--line-2,#cbd5e1)!important;border-radius:12px!important;
+  background:var(--surface-2,#f8fafc) linear-gradient(45deg,transparent 50%,var(--i600,#4f46e5) 50%) calc(100% - 15px) 50%/6px 6px no-repeat!important;
+  color:var(--tx,#1e293b)!important;font-size:12px!important;font-weight:850!important;cursor:pointer;
+  box-shadow:0 2px 8px rgba(99,102,241,.08);transition:all var(--t,.26s) var(--ease,cubic-bezier(.22,.61,.36,1));}
+.subject-select:hover,.subject-select:focus{border-color:var(--i400,#818cf8)!important;box-shadow:0 0 0 3px rgba(99,102,241,.13)!important;}
+.subject-select:disabled{opacity:.65;cursor:wait;}
+body.dark .subject-select{background-color:#0f1829!important;color:var(--tx)!important;}
+.top-bar-right{gap:8px!important;flex-shrink:0;}
+.cmdk-open-btn,.desktop-toggle,.dark-toggle{flex-shrink:0;}
+.desktop-toggle{width:42px;height:42px;border:1px solid var(--line-2,#cbd5e1);border-radius:var(--r,14px);background:var(--surface-2,#f8fafc);color:var(--tx-2,#475569);font-size:16px;cursor:pointer;display:grid;place-items:center;transition:all var(--t,.26s) var(--ease,cubic-bezier(.22,.61,.36,1));}
+.desktop-toggle:hover{border-color:var(--i400,#818cf8);background:var(--i50,#eef2ff);color:var(--i600,#4f46e5);transform:translateY(-1px);}
+.desktop-toggle[aria-pressed="true"]{background:linear-gradient(135deg,var(--i500,#6366f1),var(--i400,#818cf8));border-color:transparent;color:#fff;box-shadow:var(--sh-glow,0 6px 22px rgba(99,102,241,.28));}
+body.dark .desktop-toggle{background:#0f1829;color:#cbd5e1;border-color:#475569;}
+body.dark .desktop-toggle:hover{background:#25314c;color:#c7d2fe;}
+#zoomControl{position:fixed;right:18px;bottom:calc(var(--dock-h,64px) + var(--safe-b,0px) + 145px);z-index:320;display:flex;align-items:center;gap:3px;padding:5px;border:1px solid var(--line-2,#cbd5e1);border-radius:14px;background:var(--surface-solid,#fff);box-shadow:var(--sh-3,0 8px 28px rgba(15,23,42,.1));-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);}
+#zoomControl button{width:30px!important;height:30px!important;min-height:30px!important;padding:0!important;border:0;border-radius:9px;background:transparent;color:var(--tx-2,#475569);font-size:13px;font-weight:900;cursor:pointer;display:grid;place-items:center;}
+#zoomControl button:hover{background:var(--i50,#eef2ff);color:var(--i600,#4f46e5);}
+#zoomControl button:disabled{opacity:.35;cursor:not-allowed;}
+#zoomValue{min-width:48px;text-align:center;color:var(--tx,#1e293b);font-size:11px;font-weight:900;font-variant-numeric:tabular-nums;}
+body.dark #zoomControl{background:#141c2e;border-color:#475569;}
+body.dark #zoomControl button{color:#cbd5e1;}
+body.dark #zoomControl button:hover{background:#312e81;color:#c7d2fe;}
+body.dark #zoomValue{color:#e8eefb;}
+body.subject-switching .subject-select{box-shadow:0 0 0 3px rgba(99,102,241,.2);}
+body.subject-switching .main{opacity:.72;transition:opacity .18s ease;}
+
+/* Desktop View is deliberately a layout mode, not a data mode. */
+body.desktop-mode{min-width:1024px;overflow-x:auto;}
+body.desktop-mode .top-bar,body.desktop-mode .tab-nav{min-width:1024px;}
+body.desktop-mode .top-bar-content,body.desktop-mode .tab-nav-inner,body.desktop-mode .main{width:100%;}
+body.desktop-mode .main{min-width:1000px;}
+body.desktop-mode .stats-grid{grid-template-columns:repeat(4,1fr)!important;}
+body.desktop-mode .search-bar{flex-direction:row!important;}
+body.desktop-mode .search-input,body.desktop-mode .filter-select{width:auto!important;}
+body.desktop-mode .mock-actions{flex-direction:row!important;}
+body.desktop-mode .mock-btn{width:auto!important;}
+body.desktop-mode .rev-question-grid{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))!important;}
+body.desktop-mode .rv2-qr-cols{grid-template-columns:1fr 1fr!important;}
+body.desktop-mode .rv2-qr-col+.rv2-qr-col{border-left:1px solid var(--line);border-top:0;}
+body.desktop-mode .an-heroes{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+@media(max-width:860px){
+  body.desktop-mode #appDock{display:none!important;}
+  body.desktop-mode .tab-nav{display:block!important;top:calc(56px + env(safe-area-inset-top,0px))!important;}
+  body.desktop-mode .tab-nav-inner{display:flex!important;overflow:visible;}
+  body.desktop-mode .tab-btn{min-height:0!important;}
+  body.desktop-mode .top-bar{position:sticky!important;}
+}
+@media(max-width:640px){
+  .top-bar{padding-left:10px!important;padding-right:10px!important;}
+  .top-bar-content{align-items:flex-start;flex-wrap:wrap;}
+  .top-bar-brand{flex:1 1 100%;}
+  .top-bar-brand h1{font-size:16px!important;}
+  .subject-select{min-width:108px;max-width:126px;}
+  .top-bar-right{margin-left:auto;}
+  #zoomControl{right:10px;}
+  body.desktop-mode #zoomControl{bottom:18px;}
+  body.desktop-mode .top-bar-brand{flex:0 0 auto;}
+  body.desktop-mode .top-bar-content{flex-wrap:nowrap;align-items:center;}
+  body.desktop-mode .top-bar-brand h1{font-size:19px!important;}
+}
+@media(min-width:861px){#zoomControl{bottom:18px;}}
+
+/* Settings auth profile — logout intentionally lives here, never in the header. */
+.auth-profile-card{border-top:3px solid #ef4444;}
+.auth-profile-head{display:flex;align-items:center;gap:12px;}
+.auth-profile-avatar{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;overflow:hidden;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:18px;font-weight:900;flex:none;}
+.auth-profile-avatar img{width:100%;height:100%;object-fit:cover;}
+.auth-profile-copy{min-width:0;flex:1;}
+.auth-profile-copy strong{display:block;font-size:14px;color:var(--tx,#1e293b);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.auth-profile-copy span{display:block;font-size:11px;color:var(--tx-2,#64748b);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.auth-profile-status{display:inline-flex;align-items:center;gap:5px;margin-top:13px;padding:6px 9px;border-radius:8px;background:var(--ok-bg,#d1fae5);color:var(--ok-fg,#065f46);font-size:10px;font-weight:850;}
+.auth-profile-status::before{content:'';width:6px;height:6px;border-radius:50%;background:#10b981;}
+.auth-logout-btn{width:100%;margin-top:13px;padding:11px 13px;border:1px solid #fecaca;border-radius:11px;background:#fff1f2;color:#be123c;font-size:12px;font-weight:850;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px;}
+.auth-logout-btn:hover{background:#ffe4e6;border-color:#fda4af;}
+body.dark .auth-profile-copy strong{color:var(--tx);}
+body.dark .auth-profile-copy span{color:var(--tx-2);}
+body.dark .auth-logout-btn{background:#450a0a;border-color:#7f1d1d;color:#fda4af;}
+body.dark .auth-logout-btn:hover{background:#5b1111;}
+
 </style>
 </head>
 <body>
@@ -2619,13 +2701,19 @@ body.dark #helpSheet kbd{background:#334155;}
 <!-- ═══ TOP BAR ═══ -->
 <div class="top-bar">
   <div class="top-bar-content">
-    <h1>🧮 Quant Mock Tracker</h1>
+    <div class="top-bar-brand">
+      <select id="subjectSelect" class="subject-select" aria-label="Active subject" title="Switch subject">
+        <option value="Maths">🧮 Maths</option>
+        <option value="English">📖 English</option>
+        <option value="GK-GS">🌐 GK-GS</option>
+        <option value="Reasoning">🧠 Reasoning</option>
+        <option value="Full Mock">🎯 Full Mock</option>
+      </select>
+      <h1 data-subject-template="{{subjectIcon}} {{subject}} Mock Tracker">🧮 Maths Mock Tracker</h1>
+    </div>
     <div class="top-bar-right">
-      <div id="authUser" class="hidden" aria-label="Signed-in user">
-        <span id="authAvatar">U</span><span id="authEmail"></span>
-        <button id="authLogout" type="button">Logout</button>
-      </div>
       <button class="cmdk-open-btn" type="button" onclick="openCommandPalette()" title="Search tabs and mocks (Ctrl/⌘ K)" aria-label="Open command palette">🔍</button>
+      <button class="desktop-toggle" type="button" id="desktopToggle" aria-pressed="false" title="Switch to desktop view" aria-label="Switch to desktop view"><i class="fa-solid fa-desktop" aria-hidden="true"></i></button>
       <button class="dark-toggle" onclick="toggleDark()" title="Toggle Dark Mode" id="darkBtn">🌙</button>
     </div>
   </div>
@@ -2652,8 +2740,8 @@ body.dark #helpSheet kbd{background:#334155;}
 <!-- ═══════════════ TAB: HOME ═══════════════ -->
 <div id="tab-home" class="fade-up">
   <div class="header">
-    <h1>🧮 Quant Mock Tracker</h1>
-    <p>Track your Quantitative Aptitude mock tests</p>
+    <h1 data-subject-template="{{subjectIcon}} {{subject}} Mock Tracker">🧮 Maths Mock Tracker</h1>
+    <p data-subject-template="Track your {{subject}} mock tests">Track your Maths mock tests</p>
     <div style="font-size:11px;opacity:.85;margin-top:10px;font-weight:600;">Designed &amp; Developed by Vikash Kumar Ratawal © 2026</div>
   </div>
 
@@ -2686,7 +2774,7 @@ body.dark #helpSheet kbd{background:#334155;}
     <div class="card-body">
       <div class="sect-title">🔍 Search & Filter</div>
       <div class="search-bar">
-        <input type="text" id="searchMocks" class="search-input" placeholder="Search by mock name..." oninput="renderMockHistory()"/>
+        <input type="text" id="searchMocks" class="search-input" data-subject-placeholder="Search {{subject}} mock name..." placeholder="Search Maths mock name..." oninput="renderMockHistory()"/>
         <select id="filterExam" class="filter-select" onchange="renderMockHistory()">
           <option value="">All Exams</option>
         </select>
@@ -2706,7 +2794,7 @@ body.dark #helpSheet kbd{background:#334155;}
 
   <div class="card">
     <div class="card-body">
-      <div class="sect-title">📚 Mock History</div>
+      <div class="sect-title" data-subject-template="📚 {{subject}} Mock History">📚 Maths Mock History</div>
       <div id="mockHistoryContainer"></div>
     </div>
   </div>
@@ -2723,7 +2811,7 @@ body.dark #helpSheet kbd{background:#334155;}
   <div class="card progress-card">
     <div class="card-body">
       <div class="progress-top">
-        <span class="progress-label">📊 Score Progress</span>
+        <span class="progress-label" data-subject-template="📊 {{subject}} Score Progress">📊 Maths Score Progress</span>
         <span class="progress-score" id="progressScoreText">0 / 0</span>
       </div>
       <div class="score-bar-wrap">
@@ -3012,7 +3100,7 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
 
     <!-- header: title + verdict pill -->
     <div class="op-head">
-      <div class="sect-title">📊 Overall Performance</div>
+      <div class="sect-title" data-subject-template="📊 {{subject}} Overall Performance">📊 Maths Overall Performance</div>
       <span class="verdict" id="anVerdict">—</span>
     </div>
 
@@ -3201,7 +3289,7 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
 
 
 <div class="rv2-topbar">
-  <div class="rv2-brand">📚 Revision Notes</div>
+  <div class="rv2-brand" data-subject-template="📚 {{subject}} Revision Notes">📚 Maths Revision Notes</div>
   <div class="rv2-topbar-actions">
     <button class="rv2-icon-btn" onclick="rvToggleAll()" title="Expand / Collapse all" id="rv2expandBtn">⤢</button>
     <button class="rv2-icon-btn" onclick="window.print()" title="Print / PDF">🖨️</button>
@@ -3271,7 +3359,7 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
         <div style="display: flex; align-items: center; gap: 8px;">
           <span style="font-size: 20px;">💬</span>
           <div>
-            <h2 style="font-size: 16px; margin: 0; font-weight: 800;">AI Tutor Chat</h2>
+            <h2 style="font-size: 16px; margin: 0; font-weight: 800;" data-subject-template="{{subject}} AI Tutor Chat">Maths AI Tutor Chat</h2>
             <p style="font-size: 11px; margin: 0; color: var(--muted, #64748b);">Ask concepts, practice questions, or discuss doubts</p>
           </div>
         </div>
@@ -3309,14 +3397,14 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
     <div class="mz-hero">
       <div>
         <div class="mz-eyebrow">SSC MOCKZONE</div>
-        <h2>Practice. Perform. Progress.</h2>
-        <p>Attempt your saved Quant mocks in a real exam-style interface and analyse each attempt separately.</p>
+        <h2 data-subject-template="{{subject}} Practice. Perform. Progress.">Maths Practice. Perform. Progress.</h2>
+        <p data-subject-template="Attempt your saved {{subject}} mocks in a real exam-style interface and analyse each attempt separately.">Attempt your saved Maths mocks in a real exam-style interface and analyse each attempt separately.</p>
       </div>
-      <div class="mz-hero-badge"><span>🎯</span><b>Quant</b><small>Sectional Tests</small></div>
+      <div class="mz-hero-badge"><span data-subject-template="{{subjectIcon}}">🧮</span><b data-subject-template="{{subject}}">Maths</b><small>Sectional Tests</small></div>
     </div>
     <div class="mz-toolbar">
       <div><div class="mz-section-label">Select exam year</div><div id="mzYearTabs" class="mz-year-tabs"></div></div>
-      <div class="mz-subject-pill">∑ Quantitative Aptitude</div>
+      <div class="mz-subject-pill" data-subject-template="∑ {{subject}}">∑ Maths</div>
     </div>
     <div id="mzMockGrid" class="mz-grid"></div>
   </section>
@@ -3349,7 +3437,7 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
 
   <section id="mzExam" class="mz-view" style="display:none">
     <div class="mz-exam-top">
-      <div class="mz-exam-brand"><button onclick="mzAskExit()" title="Exit test">←</button><div><small>SSC MOCKZONE</small><b id="mzExamName">Quant Mock</b></div></div>
+      <div class="mz-exam-brand"><button onclick="mzAskExit()" title="Exit test">←</button><div><small>SSC MOCKZONE</small><b id="mzExamName" data-subject-template="{{subject}} Mock">Maths Mock</b></div></div>
       <div class="mz-timer"><small>Time Left</small><b id="mzTimer">15:00</b></div>
       <button class="mz-palette-toggle" onclick="mzTogglePalette()">☷ Palette</button>
     </div>
@@ -3364,7 +3452,7 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
         </div>
       </main>
       <aside id="mzPalettePanel" class="mz-palette-panel">
-        <div class="mz-candidate"><div class="mz-avatar">VK</div><div><b>Candidate</b><small>Quantitative Aptitude</small></div></div>
+        <div class="mz-candidate"><div class="mz-avatar">VK</div><div><b>Candidate</b><small data-subject-template="{{subject}}">Maths</small></div></div>
         <div class="mz-legend"><span><i class="not-visited"></i>Not Visited</span><span><i class="not-answered"></i>Not Answered</span><span><i class="answered"></i>Answered</span><span><i class="marked"></i>Marked</span><span><i class="answered-marked"></i>Answered &amp; Marked</span></div>
         <div class="mz-palette-title">Question Palette</div><div id="mzPalette" class="mz-palette"></div>
         <button class="mz-submit" onclick="mzOpenSubmit()">Submit Test</button>
@@ -3383,7 +3471,7 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
 <!-- ═══════════════ TAB: SEASON ═══════════════ -->
 <div id="tab-pattern" class="hidden fade-up">
   <div class="card"><div class="card-body">
-    <div class="sect-title">📊 Season Trend &amp; Pattern</div>
+    <div class="sect-title" data-subject-template="📊 {{subject}} Season Trend &amp; Pattern">📊 Maths Season Trend &amp; Pattern</div>
     <div class="season-filter-row" style="margin-top:10px;">
       <select id="patternRange" class="inp" style="width:auto" onchange="renderPattern()">
         <option value="day">Daily</option>
@@ -3392,8 +3480,7 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
         <option value="all">All Time</option>
       </select>
       <select id="patternSubject" class="inp" style="flex:1;min-width:150px" onchange="renderPattern()">
-        <option value="">All Subjects</option>
-        <option value="Quantitative Aptitude">Quantitative Aptitude</option>
+        <option value="" data-subject-template="{{subject}}">Maths</option>
       </select>
       <div id="patternSummary" style="font-size:11px;color:var(--tx-2);font-weight:700;"></div>
     </div>
@@ -3439,7 +3526,7 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;">
     <div class="card">
       <div class="card-body">
-        <div class="sect-title">📤 Export</div>
+        <div class="sect-title" data-subject-template="📤 {{subject}} Export">📤 Maths Export</div>
         <div style="display:flex;flex-direction:column;gap:8px;">
           <button onclick="exportCSV()" style="width:100%;padding:12px;border-radius:10px;background:#10b981;color:#fff;font-weight:700;font-size:13px;border:none;cursor:pointer;">📊 Export CSV</button>
           <button onclick="exportJSON()" style="width:100%;padding:12px;border-radius:10px;background:#3b82f6;color:#fff;font-weight:700;font-size:13px;border:none;cursor:pointer;">📄 Export JSON</button>
@@ -3450,7 +3537,7 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
     </div>
     <div class="card">
       <div class="card-body">
-        <div class="sect-title">📥 Import</div>
+        <div class="sect-title" data-subject-template="📥 {{subject}} Import">📥 Maths Import</div>
         <div style="display:flex;flex-direction:column;gap:12px;">
           <div>
             <label class="lbl">Import CSV</label>
@@ -3508,16 +3595,27 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
 <div id="tab-settings" class="hidden fade-up">
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;">
     <!-- 🤖 AI Settings card yahan ai.js (addSettingsCard) inject karta hai -->
+    <div id="authSettingsProfile" class="card auth-profile-card hidden" aria-live="polite">
+      <div class="card-body">
+        <div class="sect-title">👤 Account &amp; Security</div>
+        <div class="auth-profile-head">
+          <div id="authSettingsAvatar" class="auth-profile-avatar">U</div>
+          <div class="auth-profile-copy"><strong id="authSettingsName">Signed in</strong><span id="authSettingsEmail">Account details load ho rahe hain…</span></div>
+        </div>
+        <div class="auth-profile-status">Your account is active</div>
+        <button id="authLogout" class="auth-logout-btn" type="button"><span aria-hidden="true">🚪</span><span>Log out of this account</span></button>
+      </div>
+    </div>
     <div class="card">
       <div class="card-body">
-        <div class="sect-title">📝 Mock Defaults</div>
+        <div class="sect-title" data-subject-template="📝 {{subject}} Mock Defaults">📝 Maths Mock Defaults</div>
         <div class="ai-sub">Naye mock ke liye default setup — import me marks/time na ho to ye values use hoti hain.</div>
         <div class="ai-grid">
           <label><span class="lbl">Total Questions</span><input id="mdTotalQ" class="inp" type="number" min="1" step="1"/></label>
           <label><span class="lbl">Total Time (min)</span><input id="mdTotalTime" class="inp" type="number" min="1" step="0.5"/></label>
           <label><span class="lbl">Marks / Correct</span><input id="mdMarksCorrect" class="inp" type="number" min="0" step="0.25"/></label>
           <label><span class="lbl">Marks / Wrong (−)</span><input id="mdMarksWrong" class="inp" type="number" min="0" step="0.25"/></label>
-          <label><span class="lbl">Subject</span><input id="mdSubject" class="inp" type="text"/></label>
+          <label><span class="lbl">Active subject</span><input id="mdSubject" class="inp" type="text" readonly aria-readonly="true"/></label>
           <label><span class="lbl">Default Exam Name</span><input id="mdExamName" class="inp" type="text" placeholder="SSC CGL"/></label>
         </div>
         <button class="ai-btn" style="margin-top:12px" onclick="saveMockDefaults()">💾 Save Mock Defaults</button>
@@ -3560,10 +3658,17 @@ Q=2 | S=I | Ch=Algebra | Topic=Quadratic | ...
 <!-- Toast -->
 <div id="toast"></div>
 
+<!-- Persistent zoom controls -->
+<div id="zoomControl" role="group" aria-label="App zoom controls">
+  <button id="zoomMinus" type="button" aria-label="Decrease zoom" title="Decrease zoom"><i class="fa-solid fa-minus" aria-hidden="true"></i></button>
+  <span id="zoomValue" aria-live="polite">100%</span>
+  <button id="zoomPlus" type="button" aria-label="Increase zoom" title="Increase zoom"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+</div>
+
 <!-- Firebase login gate: the existing local app remains unchanged behind it. -->
 <div id="authGate" role="dialog" aria-modal="true" aria-labelledby="authTitle">
   <div class="auth-card">
-    <div class="auth-brand" id="authTitle">🧮 Quant Mock Tracker</div>
+    <div class="auth-brand" id="authTitle" data-subject-template="{{subjectIcon}} {{subject}} Mock Tracker">🧮 Maths Mock Tracker</div>
     <div class="auth-sub">Apne mock data aur AI tools access karne ke liye sign in karein</div>
     <form id="authForm">
       <input id="authEmailInput" class="inp" type="email" autocomplete="email" placeholder="Email address" required>
@@ -3638,6 +3743,31 @@ const CATEGORY_CHAPTERS = {
   'Advanced Maths': ['Algebra','Geometry','Trigonometry','Mensuration','Coordinate Geometry','Quadratic Equations','Linear Equation','Surds & Indices']
 };
 const CATEGORIES = ['Arithmetic','Advanced Maths'];
+const SUBJECT_CATEGORIES = {
+  Maths: ['Arithmetic','Advanced Maths'],
+  English: ['Grammar','Vocabulary','Reading Comprehension'],
+  'GK-GS': ['General Knowledge','General Science','Current Affairs'],
+  Reasoning: ['Verbal Reasoning','Non-Verbal Reasoning','Analytical Reasoning'],
+  'Full Mock': ['Mixed Sections']
+};
+const SUBJECT_CATEGORY_CHAPTERS = {
+  Grammar: ['Parts of Speech','Tenses','Subject-Verb Agreement','Voice','Narration','Articles','Prepositions'],
+  Vocabulary: ['Synonyms','Antonyms','One Word Substitution','Idioms & Phrases','Spelling'],
+  'Reading Comprehension': ['Passage Practice','Cloze Test','Para Jumbles'],
+  'General Knowledge': ['History','Geography','Polity','Economy','Static GK'],
+  'General Science': ['Physics','Chemistry','Biology','Environment'],
+  'Current Affairs': ['National','International','Sports','Awards & Schemes'],
+  'Verbal Reasoning': ['Analogy','Classification','Series','Coding-Decoding','Blood Relations'],
+  'Non-Verbal Reasoning': ['Mirror Images','Figure Series','Paper Folding','Embedded Figures'],
+  'Analytical Reasoning': ['Syllogism','Statement & Conclusion','Seating Arrangement','Puzzles'],
+  'Mixed Sections': ['Mixed Practice']
+};
+window.qmtSubjectCategoryChapters = Object.assign({}, CATEGORY_CHAPTERS, SUBJECT_CATEGORY_CHAPTERS);
+function getSubjectCategories(){
+  const subject=typeof window.qmtSubjectName==='function'?window.qmtSubjectName():'Maths';
+  return (SUBJECT_CATEGORIES[subject]||CATEGORIES).slice();
+}
+window.qmtSubjectCategories = getSubjectCategories;
 function normCat(v){
   v=String(v||'').trim().toLowerCase();
   if(['arith','arithmetic','quant','maths','mathematics','a'].includes(v)) return 'Arithmetic';
@@ -3647,10 +3777,12 @@ function normCat(v){
 function autoCategory(chapter){
   const ch=String(chapter||'').trim().toLowerCase();
   if(!ch) return '';
-  for(const [cat,arr] of Object.entries(CATEGORY_CHAPTERS)){
+  const activeCategories=getSubjectCategories();
+  for(const cat of activeCategories){
+    const arr=SUBJECT_CATEGORY_CHAPTERS[cat]||CATEGORY_CHAPTERS[cat]||[];
     if(arr.some(c=>ch.includes(c.toLowerCase()) || c.toLowerCase().includes(ch))) return cat;
   }
-  return 'Arithmetic';
+  return activeCategories[0] || 'Arithmetic';
 }
 
 // ═══════════════════════════════════════════
@@ -3658,7 +3790,7 @@ function autoCategory(chapter){
 // ═══════════════════════════════════════════
 const MOCK_DEFAULTS_KEY = 'qmt_mock_defaults_v1';
 function baseDefaultSetup(){
-  return {date:'', examName:'', year:2026, name:'', subject:'Quantitative Aptitude', totalQ:25, totalTime:15, percentile:null, avgScore:null, cutoff:null, marksCorrect:2, marksWrong:0.5};
+  return {date:'', examName:'', year:2026, name:'', subject:(typeof window.qmtSubjectName==='function'?window.qmtSubjectName():'Maths'), totalQ:25, totalTime:15, percentile:null, avgScore:null, cutoff:null, marksCorrect:2, marksWrong:0.5};
 }
 function numOrDef(value, fallback){
   if(value === '' || value == null) return fallback;
@@ -3681,7 +3813,7 @@ function defaultSetup(){
     totalTime: numOrDef(d.totalTime, base.totalTime),
     marksCorrect: numOrDef(d.marksCorrect, base.marksCorrect),
     marksWrong: numOrDef(d.marksWrong, base.marksWrong),
-    subject: String(d.subject || base.subject),
+    subject: (typeof window.qmtSubjectName==='function'?window.qmtSubjectName():base.subject),
     examName: String(d.examName || base.examName),
     date: '', name: '', percentile: null, avgScore: null, cutoff: null
   };
@@ -3703,17 +3835,20 @@ function saveMockDefaults(){
     totalTime: numOrDef(v('mdTotalTime'), 15),
     marksCorrect: numOrDef(v('mdMarksCorrect'), 2),
     marksWrong: numOrDef(v('mdMarksWrong'), 0.5),
-    subject: v('mdSubject') || 'Quantitative Aptitude',
+    subject: (typeof window.qmtSubjectName==='function'?window.qmtSubjectName():'Maths'),
     examName: v('mdExamName') || ''
   };
   try{ localStorage.setItem(MOCK_DEFAULTS_KEY, JSON.stringify(defaults)); }catch(e){}
   showToast('✅ Mock defaults save ho gaye');
 }
 
+const DEFAULT_TAGS = Object.freeze(['Conceptual','Calculation Heavy','Easy Miss','Must Revise','Repeated Pattern','Exam Favourite','Trap Question','Good Question','Shortcut Available','Accuracy Issue']);
+
 let S = {
   setup: defaultSetup(),
   questions: [],
-  allTags: ['Conceptual','Calculation Heavy','Easy Miss','Must Revise','Repeated Pattern','Exam Favourite','Trap Question','Good Question','Shortcut Available','Accuracy Issue'],
+  vocab: [],
+  allTags: [...DEFAULT_TAGS],
   customReasons: [],
   reasonNotes: {},
   mocks: [],
@@ -3724,8 +3859,19 @@ let S = {
 // INIT
 // ═══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
+  // The subject adapter owns the connection lifecycle; the legacy UI only
+  // receives the currently active subject's state snapshot.
+  if(window.QMTSubjects){
+    window.QMTSubjects.configure({
+      getState: ()=>S,
+      setState: (data, replace)=>{ if(data) applyState(data, replace); else resetStateForSubject(); },
+      refresh: (subject, previous)=>refreshSubjectUI(subject, previous)
+    });
+  }
   // Data pehle load hoga (IndexedDB async hai), uske baad hi renders — order wahi hai
   loadFromStorage(()=>{
+    if(typeof rvLoadSubjectState==='function') rvLoadSubjectState();
+    if(typeof qmtApplySubjectLabels==='function') qmtApplySubjectLabels();
     initDarkMode();
     updateHomeStats();
     renderMockHistory();
@@ -3753,137 +3899,68 @@ document.addEventListener('DOMContentLoaded', () => {
 // ═══════════════════════════════════════════
 function saveToStorage(){
   _saveDirty = true;
-  if(_saveTimer) return;                       // debounce — ek hi pending save, har click par stringify nahi
+  if(_saveTimer) return;                       // debounce keeps large imports off the hot path
   _saveTimer = setTimeout(()=>{ _saveTimer = null; persistNow(); }, 300);
 }
 
 function loadFromStorage(cb){
-  Promise.all([idbGet(DB_KEY), idbGet(DB_KEY + '_meta')]).then(([idbVal, meta])=>{
-    let candidate = null;
-    if(idbVal !== undefined && idbVal !== null){
-      try{ candidate = JSON.parse(idbVal); }catch(e){ candidate = null; }
-    }
-    // Emergency mirror: agar IDB write hone se pehle tab close hua tha toh mirror se recover
-    const mirrorRaw = lsGet('quantTracker_mirror');
-    if(mirrorRaw){
-      try{
-        const m = JSON.parse(mirrorRaw);
-        const metaT = (meta && meta.t) ? meta.t : 0;
-        if(!candidate || (m && m.t > metaT)) candidate = m.d || candidate;
-      }catch(e){}
-    }
-    // Purane version ka localStorage data (migration)
-    const legacy = lsGet('quantTracker');
-    if(!candidate && legacy){
-      try{ candidate = JSON.parse(legacy); }
-      catch(e){ try{ lsSet('quantTracker_corrupt', legacy); }catch(e2){} }
-    }
-    if(candidate) applyState(candidate);
+  const engine = window.QMTSubjects;
+  if(!engine){
     if(cb) cb();
-    // Migration: legacy/mirror data ko IndexedDB me push karke cleanup kar do
-    if(candidate && (legacy || mirrorRaw)) persistNow();
-  }).catch(()=>{
-    // IndexedDB bilkul unavailable → purana localStorage path
-    let candidate = null;
-    const raw = lsGet('quantTracker');
-    if(raw){ try{ candidate = JSON.parse(raw); }catch(e){ try{ lsSet('quantTracker_corrupt', raw); }catch(e2){} } }
-    if(!candidate){
-      const mr = lsGet('quantTracker_mirror');
-      if(mr){ try{ const m = JSON.parse(mr); if(m && m.d) candidate = m.d; }catch(e){} }
-    }
-    if(candidate) applyState(candidate);
-    _storageMode = 'localStorage';
+    return;
+  }
+  _storageMode = engine.getStorageMode ? engine.getStorageMode() : 'idb';
+  engine.loadActive().then(data=>{
+    if(data) applyState(data, true);
+    else resetStateForSubject();
+    _storageMode = engine.getStorageMode ? engine.getStorageMode() : _storageMode;
+    if(cb) cb();
+  }).catch(error=>{
+    _storageMode = 'memory';
+    console.warn('Subject data could not be loaded.', error);
+    resetStateForSubject();
     if(cb) cb();
   });
 }
 
-// ── IndexedDB helpers (koi external library nahi — offline bhi chalta hai) ──
-const DB_NAME = 'quantTrackerDB', DB_STORE = 'kv', DB_KEY = 'quantTracker';
-let _idb = null, _idbFailed = false;
-
-function idbOpen(){
-  return new Promise(resolve=>{
-    if(_idb) return resolve(_idb);
-    if(_idbFailed) return resolve(null);
-    try{
-      const req = indexedDB.open(DB_NAME, 1);
-      req.onupgradeneeded = ()=>{
-        const db = req.result;
-        if(!db.objectStoreNames.contains(DB_STORE)) db.createObjectStore(DB_STORE);
-      };
-      req.onsuccess = ()=>{ _idb = req.result; resolve(_idb); };
-      req.onerror = ()=>{ _idbFailed = true; resolve(null); };
-      req.onblocked = ()=>{ _idbFailed = true; resolve(null); };
-    }catch(e){ _idbFailed = true; resolve(null); }
-  });
-}
-function idbGet(key){
-  return idbOpen().then(db=>new Promise(resolve=>{
-    if(!db) return resolve(undefined);
-    try{
-      const tx = db.transaction(DB_STORE,'readonly');
-      const rq = tx.objectStore(DB_STORE).get(key);
-      rq.onsuccess = ()=>resolve(rq.result);
-      rq.onerror = ()=>resolve(undefined);
-    }catch(e){ resolve(undefined); }
-  }));
-}
-function idbSet(key,val){
-  return idbOpen().then(db=>new Promise(resolve=>{
-    if(!db) return resolve(false);
-    try{
-      const tx = db.transaction(DB_STORE,'readwrite');
-      tx.objectStore(DB_STORE).put(val,key);
-      tx.oncomplete = ()=>resolve(true);
-      tx.onerror = tx.onabort = ()=>resolve(false);
-    }catch(e){ resolve(false); }
-  }));
-}
-function idbDel(key){
-  return idbOpen().then(db=>new Promise(resolve=>{
-    if(!db) return resolve(false);
-    try{
-      const tx = db.transaction(DB_STORE,'readwrite');
-      tx.objectStore(DB_STORE).delete(key);
-      tx.oncomplete = ()=>resolve(true);
-      tx.onerror = tx.onabort = ()=>resolve(false);
-    }catch(e){ resolve(false); }
-  }));
-}
-function lsSet(key,val){ try{ localStorage.setItem(key,val); return true; }catch(e){ return false; } }
-function lsGet(key){ try{ return localStorage.getItem(key); }catch(e){ return null; } }
-function lsDel(key){ try{ localStorage.removeItem(key); }catch(e){} }
-
-let _lastDataBytes = 0;      // last serialize kiye hue state ka size
-let _storageMode = 'idb';    // 'idb' | 'localStorage'
+let _lastDataBytes = 0;
+let _storageMode = 'idb';
 let _saveTimer = null, _saveDirty = false;
 
-function serializeState(){
-  const json = JSON.stringify(S);
-  try{ _lastDataBytes = new Blob([json]).size; }catch(e){ _lastDataBytes = json.length * 2; }
-  return json;
+function estimateStateBytes(){
+  // Keep save operations cheap: IndexedDB receives structured records directly.
+  // This small estimate is only for the storage status card and intentionally
+  // avoids serialising an unlimited question/image collection.
+  let bytes=0;
+  const addText=value=>{ if(value!=null) bytes+=String(value).length*2; };
+  (S.questions||[]).forEach(q=>{
+    ['notes','questionText','chapter','topic','subtopic','formula','solution','keyConcept','warning','tip','shortcut'].forEach(k=>addText(q[k]));
+    (q.options||[]).forEach(o=>{addText(o&&o.k);addText(o&&o.v);});
+    (q.tags||[]).forEach(addText);
+  });
+  (S.mocks||[]).forEach(m=>{addText(m&&m.id);addText(m&&m.name);});
+  (S.vocab||[]).forEach(v=>addText(v&&v.word||v));
+  (S.assets||[]).forEach(asset=>{bytes+=Number(asset&&asset.size)||0;});
+  _lastDataBytes=Math.max(bytes,(S.questions||[]).length*180,(S.mocks||[]).length*260);
+  return _lastDataBytes;
 }
 
 function persistNow(){
   _saveDirty = false;
-  let json;
-  try{ json = serializeState(); }
-  catch(e){ if(typeof showToast==='function') showToast('⚠️ Data save nahi hua (serialize error)'); return; }
-
-  idbSet(DB_KEY, json).then(success=>{
-    if(success){
-      idbSet(DB_KEY + '_meta', {t: Date.now()});
-      // migration complete — purani copies hatana safe hai
-      if(lsGet('quantTracker')) lsDel('quantTracker');
-      if(lsGet('quantTracker_mirror')) lsDel('quantTracker_mirror');
-      try{ localStorage.setItem('quantTracker_ping', String(Date.now())); }catch(e){} // doosre tabs ko update batane ke liye
-    } else {
-      // IndexedDB fail → localStorage fallback (chhota data ho tabhi chalega)
-      _storageMode = 'localStorage';
-      if(!lsSet('quantTracker', json)){
-        if(typeof showToast==='function') showToast('🚨 Storage full! Backup export karo + purana data delete karo.');
-      }
-    }
+  const engine = window.QMTSubjects;
+  if(!engine || typeof engine.saveState !== 'function'){
+    _storageMode = 'memory';
+    return;
+  }
+  estimateStateBytes();
+  _storageMode = engine.getStorageMode ? engine.getStorageMode() : 'idb';
+  engine.saveState(S).then(success=>{
+    _storageMode = engine.getStorageMode ? engine.getStorageMode() : _storageMode;
+    if(!success && typeof showToast==='function') showToast('⚠️ IndexedDB save retry hoga');
+    if(typeof updateStorageIndicator==='function') updateStorageIndicator();
+  }).catch(error=>{
+    console.warn('Subject persistence failed.', error);
+    _storageMode = 'memory';
     if(typeof updateStorageIndicator==='function') updateStorageIndicator();
   });
 }
@@ -3891,32 +3968,43 @@ function persistNow(){
 function flushSaveNow(){
   if(_saveTimer){ clearTimeout(_saveTimer); _saveTimer = null; }
   if(!_saveDirty) return;
-  // Safety net: tab close/background hote waqt chhota data sync localStorage mirror me rakh do,
-  // taaki agar IDB write land na ho paye toh bhi data loss na ho
-  if(_lastDataBytes > 0 && _lastDataBytes < 3.5 * 1024 * 1024){
-    try{ lsSet('quantTracker_mirror', JSON.stringify({t: Date.now(), d: S})); }catch(e){}
-  }
   persistNow();
 }
 window.addEventListener('beforeunload', flushSaveNow);
 document.addEventListener('visibilitychange', ()=>{ if(document.hidden) flushSaveNow(); });
 
-function normalizeState(data){
+function freshSubjectState(){
+  return {
+    setup: defaultSetup(), questions: [], vocab: [], assets: [], allTags: [...DEFAULT_TAGS],
+    customReasons: [], reasonNotes: {}, mocks: [], mockAttempts: []
+  };
+}
+
+function resetStateForSubject(){
+  S = freshSubjectState();
+  _lastDataBytes = 0;
+}
+
+function normalizeState(data, replace){
   if(!data || typeof data !== 'object') data = {};
-  const out = {...S, ...data};
+  const out = replace ? {...data} : {...S, ...data};
   if(!Array.isArray(out.questions)) out.questions = [];
+  if(!Array.isArray(out.vocab)) out.vocab = [];
+  if(!Array.isArray(out.assets)) out.assets = Array.isArray(out.images) ? out.images : [];
   if(!Array.isArray(out.mocks)) out.mocks = [];
   if(!Array.isArray(out.mockAttempts)) out.mockAttempts = [];
-  if(!Array.isArray(out.allTags) || !out.allTags.length) out.allTags = S.allTags;
+  if(!Array.isArray(out.allTags) || !out.allTags.length) out.allTags = [...DEFAULT_TAGS];
   if(!Array.isArray(out.customReasons)) out.customReasons = [];
   if(!out.reasonNotes || typeof out.reasonNotes !== 'object' || Array.isArray(out.reasonNotes)) out.reasonNotes = {};
-  if(!out.setup || typeof out.setup !== 'object') out.setup = {...S.setup};
-  out.setup = {...S.setup, ...out.setup};
-  // Purane build ka hardcoded 30m default SSC CGL Quant (25Q) ke liye galat tha.
+  if(!out.setup || typeof out.setup !== 'object') out.setup = {};
+  out.setup = {...defaultSetup(), ...out.setup};
+  // The selector is the source of truth; imported legacy labels cannot leak
+  // into another subject's dashboards or mock cards.
+  if(typeof window.qmtSubjectName === 'function') out.setup.subject = window.qmtSubjectName();
+  // Purane build ka hardcoded 30m default SSC CGL (25Q) ke liye galat tha.
   if(/ssc\s*cgl/i.test(String(out.setup.examName||'')) && parseInt(out.setup.totalQ)===25 && parseInt(out.setup.totalTime)===30){
     out.setup.totalTime=15;
   }
-  // har question ki light validation — corrupt rows app ko crash nahi karenge
   out.questions = out.questions.map(q=>{
     if(!q || typeof q !== 'object') return null;
     const o = {...q};
@@ -3927,12 +4015,14 @@ function normalizeState(data){
     o.tags = sanitizeQuestionTags(o, o.tags);
     return o;
   }).filter(Boolean);
+  out.mocks = out.mocks.filter(mock=>mock && typeof mock === 'object');
   return out;
 }
 
-function applyState(data){
-  S = normalizeState(data);
-  try{ _lastDataBytes = new Blob([JSON.stringify(S)]).size; }catch(e){}
+function applyState(data, replace){
+  if(!data){ resetStateForSubject(); return; }
+  S = normalizeState(data, replace);
+  estimateStateBytes();
 }
 
 // ═══════════════════════════════════════════
@@ -4013,12 +4103,44 @@ function switchTab(tabName){
   if(tabName==='settings') populateMockDefaults();
 }
 
+/* Render boundary for a subject transition. Every existing tab renderer reads
+   S, so keeping this refresh in one place prevents one subject from leaking
+   rows, charts, revision state, or mock attempts into another. */
+function refreshSubjectUI(subject, previous){
+  // A live mock belongs to the previous subject. Do not let an unfinished
+  // attempt render against the newly selected subject's question set.
+  if(typeof mzState!=='undefined' && mzState){
+    clearInterval(mzTimer); mzTimer=null; mzState=null; mzLastAttempt=null;
+  }
+  if(typeof qmtApplySubjectLabels==='function') qmtApplySubjectLabels();
+  if(typeof rvLoadSubjectState==='function') rvLoadSubjectState();
+  ['searchMocks','tableSearch','rv2searchInput','rv2uniInput','fastTextInput','box2Input','chatInput'].forEach(id=>{ const el=g(id); if(el) el.value=''; });
+  ['filterExam','filterYear','tableFilterCategory','tableFilterStatus','tableFilterChapter','tableFilterDiff','tableFilterReason','tableFilterTag','rv2chapterFilter','rv2statusFilter','rv2difficultyFilter'].forEach(id=>{ const el=g(id); if(el) el.value=''; });
+  ['rv2uniPrev','previewArea','box2PreviewArea'].forEach(id=>{ const el=g(id); if(el) el.classList.add('hidden'); });
+  ['rv2file','importCSV','importJSON','restoreFile','aiImportFile'].forEach(id=>{ const el=g(id); if(el) el.value=''; });
+  const pending=g('rv2pendingChip'); if(pending) pending.classList.remove('rv2-on');
+  if(typeof closeEditQ==='function') closeEditQ();
+  if(typeof updateHomeStats==='function') updateHomeStats();
+  if(typeof renderMockHistory==='function') renderMockHistory();
+  if(typeof renderProgress==='function') renderProgress();
+  if(typeof renderTable==='function') renderTable();
+  if(typeof renderAnalytics==='function') renderAnalytics();
+  if(typeof renderRevision==='function') renderRevision();
+  if(typeof mzRenderLanding==='function') mzRenderLanding();
+  if(typeof renderPattern==='function') renderPattern();
+  if(typeof populateMockDefaults==='function') populateMockDefaults();
+  if(typeof updateStorageIndicator==='function') updateStorageIndicator();
+  if(g('tab-analytics') && !g('tab-analytics').classList.contains('hidden') && typeof renderCharts==='function') setTimeout(renderCharts,80);
+}
+
 // ═══════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════
 function g(id){ return document.getElementById(id); }
 function gv(id){ const el=g(id); return el?el.value:''; }
 function sv2(id,text){ const el=g(id); if(el) el.textContent=text; }
+function currentSubjectName(){ return typeof window.qmtSubjectName==='function' ? window.qmtSubjectName() : 'Maths'; }
+function currentSubjectIcon(){ return typeof window.qmtSubjectIcon==='function' ? window.qmtSubjectIcon() : '🧮'; }
 function formatTime(sec){ sec=parseInt(sec)||0; if(sec<60) return sec+'s'; const m=Math.floor(sec/60),r=sec%60; return m+'m'+(r?' '+r+'s':''); }
 function formatDate(dateStr){ const d=new Date(dateStr); return d.getDate()+' '+d.toLocaleString('en',{month:'short'})+' '+d.getFullYear(); }
 
@@ -4051,11 +4173,9 @@ let _siTimer = null;
 let _siWarnLevel = 0; // 0=ok 1=warn 2=danger 3=critical
 
 function getAppDataBytes(){
-  if(_lastDataBytes > 0) return _lastDataBytes;
-  try{
-    const raw = lsGet('quantTracker') || lsGet('quantTracker_mirror') || '';
-    return raw ? new Blob([raw]).size : 0;
-  }catch(e){ return 0; }
+  // Approximation for the UI only; actual records remain in the active
+  // subject database and may contain Blobs/images that JSON cannot represent.
+  return _lastDataBytes > 0 ? _lastDataBytes : 0;
 }
 
 let _siQuotaCache = null; // browser ki asli quota (estimate se)
@@ -4069,10 +4189,10 @@ function updateStorageIndicator(){
 
   const appBytes = getAppDataBytes();
   const elLabel = g('siAppLabel');
-  if(elLabel) elLabel.textContent = 'App Data (' + (_storageMode === 'localStorage' ? 'localStorage' : 'IndexedDB') + ')';
+  if(elLabel) elLabel.textContent = 'App Data (' + (_storageMode === 'memory' ? 'session memory' : 'IndexedDB') + ')';
 
   // IndexedDB ka limit browser quota hota hai (GBs me) — localStorage sirf ~5MB
-  let limit = (_storageMode === 'localStorage') ? 5 * 1024 * 1024 : (_siQuotaCache || 100 * 1024 * 1024);
+  let limit = (_siQuotaCache || 100 * 1024 * 1024);
 
   const paint = (lim)=>{
     const pct = lim > 0 ? Math.min(100, (appBytes / lim) * 100) : 0;
@@ -4106,7 +4226,7 @@ function updateStorageIndicator(){
   const fillBrowser = (usage, quota)=>{
     elUsed2.textContent = formatBytes(usage != null ? usage : appBytes);
     elMax2.textContent = formatBytes(quota || limit);
-    if(quota && _storageMode !== 'localStorage'){ _siQuotaCache = quota; paint(quota); }
+    if(quota && _storageMode !== 'memory'){ _siQuotaCache = quota; paint(quota); }
   };
   if(navigator.storage && navigator.storage.estimate){
     navigator.storage.estimate().then(r=>fillBrowser(r.usage, r.quota)).catch(()=>fillBrowser(appBytes, limit));
@@ -4268,8 +4388,8 @@ function loadMock(id){
   if(!mock) return;
   if(!confirm(`Load "${mock.name}"? Current mock data will be replaced.`)) return;
   
-  S.setup = {...mock.setup};
-  S.questions = [...mock.questions];
+  S.setup = {...mock.setup, subject:currentSubjectName()};
+  S.questions = [...(mock.questions||[])];
   saveToStorage();
   
   updateHomeStats();
@@ -4297,8 +4417,8 @@ function deleteMock(id){
 function viewMockAnalytics(id){
   const mock = S.mocks.find(m=>m.id===id);
   if(!mock) return;
-  S.setup = {...mock.setup};
-  S.questions = [...mock.questions];
+  S.setup = {...mock.setup, subject:currentSubjectName()};
+  S.questions = [...(mock.questions||[])];
   saveToStorage();
   switchTab('analytics');
   showToast(`📊 Viewing analytics for "${mock.name}"`);
@@ -4307,8 +4427,8 @@ function viewMockAnalytics(id){
 function viewMockRevision(id){
   const mock = S.mocks.find(m=>m.id===id);
   if(!mock) return;
-  S.setup = {...mock.setup};
-  S.questions = [...mock.questions];
+  S.setup = {...mock.setup, subject:currentSubjectName()};
+  S.questions = [...(mock.questions||[])];
   saveToStorage();
   switchTab('revision');
   showToast(`📚 Viewing revision for "${mock.name}"`);
@@ -5246,7 +5366,8 @@ function refreshCategoryFilter(){
   if(!sel) return;
   const cats = [...new Set(S.questions.map(q=>q.category).filter(Boolean))].sort();
   const cur = sel.value;
-  sel.innerHTML = '<option value="">All Categories</option>' + CATEGORIES.map(c=>`<option value="${c}"${(cats.includes(c)||true)?'':''}${c===cur?' selected':''}>${c}</option>`).join('');
+  const available=[...new Set([...getSubjectCategories(),...cats])];
+  sel.innerHTML = '<option value="">All Categories</option>' + available.map(c=>`<option value="${c}"${c===cur?' selected':''}>${c}</option>`).join('');
 }
 
 function refreshChapterFilter(){
@@ -5255,7 +5376,7 @@ function refreshChapterFilter(){
   const fCat = gv('tableFilterCategory');
   let chs;
   if(fCat){
-    chs = (CATEGORY_CHAPTERS[fCat]||[]).slice();
+    chs = (SUBJECT_CATEGORY_CHAPTERS[fCat]||CATEGORY_CHAPTERS[fCat]||[]).slice();
   } else {
     chs = [...new Set(S.questions.map(q=>q.chapter).filter(Boolean))].sort();
   }
@@ -5348,6 +5469,7 @@ function renderTable(){
   const sCol = {Correct:'b-correct',Incorrect:'b-incorrect',Unattempted:'b-unattempted'};
   const dCol = {'Very Easy':'b-very-easy',Easy:'b-easy',Medium:'b-medium',Hard:'b-hard','Very Hard':'b-very-hard'};
   
+  const categoryOptions = [...new Set([...getSubjectCategories(), ...S.questions.map(x=>x.category).filter(Boolean)])];
   const rowHtml = q=>{
     const oi = idxMap.get(q);
     // FIX (request #2): explicit 0s bhi dikhega (pehle '—' aa jata tha)
@@ -5381,7 +5503,7 @@ function renderTable(){
       <td><span class="dpill ${sCol[q.status]||''}">${escapeHtml(q.status)}</span></td>
       <td>
         <select class="inp" style="width:100%;font-size:11px;padding:2px 4px;" onchange="updateCategory(${oi}, this.value)">
-          ${CATEGORIES.map(c=>`<option value="${c}"${q.category===c?' selected':''}>${c==='Arithmetic'?'📗':''}${c==='Advanced Maths'?'🔷':''} ${c}</option>`).join('')}
+          ${categoryOptions.map(c=>`<option value="${c}"${q.category===c?' selected':''}>${c==='Arithmetic'?'📗 ':''}${c==='Advanced Maths'?'🔷 ':''}${c}</option>`).join('')}
         </select>
       </td>
       <td style="font-weight:600;">${escapeHtml(q.chapter)||'—'}</td>
@@ -5538,7 +5660,9 @@ function openEditQ(idx){
   editingIdx = idx;
   const q = S.questions[idx];
   g('editQNo').textContent = q.qNo;
-  g('editCategory').value = q.category || 'Arithmetic';
+  const editCategories=[...new Set([...getSubjectCategories(),q.category].filter(Boolean))];
+  g('editCategory').innerHTML=editCategories.map(c=>'<option value="'+escapeHtml(c)+'">'+escapeHtml(c)+'</option>').join('');
+  g('editCategory').value = q.category || getSubjectCategories()[0] || 'Arithmetic';
   g('editChapter').value = q.chapter || '';
   g('editTopic').value = q.topic || '';
   g('editSubtopic').value = q.subtopic || '';
@@ -6795,7 +6919,7 @@ function renderPattern(){
   const root=g('tab-pattern');if(!root)return;
   const range=gv('patternRange')||'month', subject=gv('patternSubject');
   let sessions=(S.mocks||[]).filter(m=>(m.questions||[]).length);
-  if(subject)sessions=sessions.filter(m=>(m.subject||'Quantitative Aptitude')===subject);
+  if(subject && subject!==currentSubjectName()) sessions=[];
   sessions.sort((a,b)=>new Date(a.date||0)-new Date(b.date||0));
   const dated=sessions.map(m=>new Date(m.date)).filter(d=>!isNaN(d));
   const latest=dated.length?new Date(Math.max(...dated.map(d=>d.getTime()))):new Date();
@@ -6914,7 +7038,7 @@ function exportCSV(){
 
 function exportJSON(){
   try{
-    dl(JSON.stringify({setup:S.setup,questions:S.questions,allTags:S.allTags,exportedAt:new Date().toISOString()},null,2),
+    dl(JSON.stringify({setup:S.setup,questions:S.questions,vocab:S.vocab||[],assets:S.assets||[],allTags:S.allTags,exportedAt:new Date().toISOString()},null,2),
       `SSC_${S.setup.name||'Export'}_${Date.now()}.json`,'application/json');
     showToast('📄 JSON exported!');
   }catch(err){ showToast('❌ Export fail hua — data me koi invalid value hai'); }
@@ -6922,7 +7046,7 @@ function exportJSON(){
 
 function backupAll(){
   try{
-    dl(JSON.stringify({mocks:S.mocks,mockAttempts:S.mockAttempts||[],current:{setup:S.setup,questions:S.questions},allTags:S.allTags,at:new Date().toISOString()},null,2),
+    dl(JSON.stringify({mocks:S.mocks,mockAttempts:S.mockAttempts||[],current:{setup:S.setup,questions:S.questions,vocab:S.vocab||[],assets:S.assets||[]},allTags:S.allTags,at:new Date().toISOString()},null,2),
       `SSC_Backup_${Date.now()}.json`,'application/json');
     showToast('🗄️ Backup done!');
   }catch(err){ showToast('❌ Backup fail hua — data me koi invalid value hai'); }
@@ -6937,7 +7061,7 @@ function exportReport(){
   const ts = getTopicStats();
   let r = `SSC CGL MOCK ANALYSIS REPORT\n${'='.repeat(40)}\n`;
   r += `Mock: ${S.setup.name||'N/A'} | Date: ${S.setup.date||'N/A'}\n`;
-  r += `Subject: ${S.setup.subject||'N/A'} | Type: Quantitative Aptitude\n\n`;
+  r += `Subject: ${currentSubjectName()} | Type: ${currentSubjectName()}\n\n`;
   r += `OVERALL\n${'-'.repeat(30)}\n`;
   r += `Total: ${S.questions.length} | Correct: ${c} | Wrong: ${w} | Skip: ${u}\n`;
   r += `Accuracy: ${acc}% | Score: ${calcScore(c,w).toFixed(1)}\n\n`;
@@ -7006,7 +7130,7 @@ function importJSON(e){
       const d = JSON.parse(ev.target.result);
       if(!d || typeof d !== 'object' || !Array.isArray(d.questions)){ showToast('❌ Invalid JSON — "questions" array nahi mila'); return; }
       if(confirm(`Import ${d.questions.length} questions?`)){
-        if(d.setup&&!S.setup.name) S.setup = d.setup;
+        if(d.setup&&!S.setup.name) S.setup = {...d.setup, subject:currentSubjectName()};
         // FIX: findIndex (O(n)) ki jagah ek Map — O(1) lookup
         const qIdxByNo = new Map();
         S.questions.forEach((x,i)=>qIdxByNo.set(String(x.qNo), i));
@@ -7017,6 +7141,8 @@ function importJSON(e){
           else { S.questions.push(q); qIdxByNo.set(String(q.qNo), S.questions.length - 1); }
         });
         S.questions.sort((a,b)=>a.qNo-b.qNo);
+        if(d.vocab) S.vocab = Array.isArray(d.vocab) ? d.vocab : S.vocab;
+        if(d.assets) S.assets = Array.isArray(d.assets) ? d.assets : S.assets;
         if(d.allTags) S.allTags = [...new Set([...S.allTags,...d.allTags])];
         saveToStorage();
         renderTable();
@@ -7038,7 +7164,7 @@ function restoreBackup(e){
       if(confirm('Restore full backup? Overwrites everything.')){
         if(bk.mocks) S.mocks = bk.mocks;
         if(Array.isArray(bk.mockAttempts)) S.mockAttempts = bk.mockAttempts;
-        if(bk.current){S.setup = bk.current.setup||S.setup; S.questions = (bk.current.questions||[]);}
+        if(bk.current){S.setup = {...(bk.current.setup||S.setup), subject:currentSubjectName()}; S.questions = (bk.current.questions||[]); S.vocab = bk.current.vocab||[]; S.assets = bk.current.assets||[];}
         if(bk.allTags) S.allTags = bk.allTags;
         saveToStorage();
         updateHomeStats();
@@ -7065,27 +7191,26 @@ function clearMock(){
 function clearAll(){
   if(!confirm(`⚠️ Clear ALL data?`)) return;
   if(!confirm('This cannot be undone. Confirm?')) return;
-  // IndexedDB + localStorage dono jagah se data hataya jaye
-  lsDel('quantTracker');
-  lsDel('quantTracker_mirror');
-  lsDel('quantTracker_corrupt');
-  idbDel(DB_KEY);
-  idbDel(DB_KEY + '_meta');
-  _lastDataBytes = 0;
-  S.questions = [];
-  S.setup = defaultSetup();
-  S.allTags = ['Conceptual','Calculation Heavy','Easy Miss','Must Revise','Repeated Pattern','Exam Favourite','Trap Question','Good Question','Shortcut Available','Accuracy Issue'];
-  S.customReasons = [];
-  S.mocks = [];
-  S.mockAttempts = [];
-  updateHomeStats();
-  renderMockHistory();
-  renderProgress();
-  renderTable();
-  showToast('💣 All cleared');
+  // Clear only the active subject database; every other subject remains intact.
   if(_saveTimer){ clearTimeout(_saveTimer); _saveTimer = null; }
   _saveDirty = false;
-  persistNow(); // khaali state turant store ho jaye
+  const engine = window.QMTSubjects;
+  const finish = ()=>{
+    if(typeof rvClearSubjectState==='function') rvClearSubjectState();
+    resetStateForSubject();
+    updateHomeStats();
+    renderMockHistory();
+    renderProgress();
+    renderTable();
+    renderAnalytics();
+    renderRevision();
+    mzRenderLanding();
+    renderPattern();
+    updateStorageIndicator();
+    showToast('💣 '+(typeof window.qmtSubjectName==='function'?window.qmtSubjectName():'Current')+' data cleared');
+  };
+  if(engine && typeof engine.clearActive==='function') engine.clearActive().then(finish).catch(()=>finish());
+  else finish();
 }
 
 function dl(content, filename, type){
@@ -8130,6 +8255,8 @@ function renderRevision(){
   rvRenderChapters(); rvRenderStats(); rvRenderAll(); rvRenderQuick(); rvRenderEntry();
   rvRenderFormulas(); rvRenderVideos(); rvRenderMistakes();
   rvFilterQuestions(); rvUpdateProgress();
+  // Keep the selected revision sub-view, but rebuild it from the active subject.
+  if(RV_TAB_VIEW[rvCurrentTab]) rvSwitchTab(rvCurrentTab);
 }
 /* rvRenderChapters dobara chale to duplicate options na bane */
 function rvRenderChapters(){
@@ -8163,8 +8290,32 @@ const rvStore={
   get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}},
   set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 };
-let rvRevised = rvStore.get('qmt_rev5_done',[]);
-let rvStarred = rvStore.get('qmt_rev5_star',[]);
+function rvSubjectKey(key){
+  const slug=typeof window.qmtSubjectSlug==='function'?window.qmtSubjectSlug():'maths';
+  return key+'_'+slug;
+}
+function rvReadSubject(key){
+  const scoped=rvSubjectKey(key);
+  try{
+    const raw=localStorage.getItem(scoped);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  // One-time compatibility with the pre-subject revision flags.
+  return (typeof window.qmtSubjectName==='function'&&window.qmtSubjectName()==='Maths')?rvStore.get(key,[]):[];
+}
+function rvLoadSubjectState(){
+  const done=rvReadSubject('qmt_rev5_done'), star=rvReadSubject('qmt_rev5_star');
+  rvRevised=Array.isArray(done)?done:[];
+  rvStarred=Array.isArray(star)?star:[];
+}
+function rvClearSubjectState(){
+  rvRevised=[]; rvStarred=[];
+  rvStore.set(rvSubjectKey('qmt_rev5_done'),rvRevised);
+  rvStore.set(rvSubjectKey('qmt_rev5_star'),rvStarred);
+}
+let rvRevised = [];
+let rvStarred = [];
+rvLoadSubjectState();
 let rvPendingOnly=false, rvCurrentTab='all';
 
 const rvIsOvertime = q => q.time > q.avgTime;
@@ -8353,7 +8504,7 @@ function rvRenderQuick(){
   }).join('');
   document.getElementById('rv2quickView').innerHTML=
     '<div class="rv2-card"><div class="rv2-card-body">'+
-    '<div class="rv2-sect-title">⚡ Quick Revision — '+RV_QUESTIONS.length+' questions</div>'+
+    '<div class="rv2-sect-title">⚡ '+currentSubjectName()+' Quick Revision — '+RV_QUESTIONS.length+' questions</div>'+
     '<div class="rv2-txt" style="margin-bottom:14px;">हर सवाल का <strong>step-by-step हल</strong> और <strong>SSC speed trick</strong> साथ-साथ — exam से पहले 5 मिनट में पूरा दोहरा लो।</div>'+
     body+'</div></div>';
 }
@@ -8525,7 +8676,7 @@ function rvRenderEntry(){
 
   document.getElementById('rv2entryView').innerHTML=
     '<div class="rv2-card"><div class="rv2-card-body">'+
-    '<div class="rv2-sect-title">📝 Entry Format — Box 2 का पूरा spec</div>'+
+    '<div class="rv2-sect-title">📝 '+currentSubjectName()+' Entry Format — Box 2 का पूरा spec</div>'+
     '<div class="rv2-txt" style="margin-bottom:14px;">आपकी main app के <b>Entry tab</b> से इसी format में data आना चाहिए, तभी सारे features बिना कुछ खोए चलेंगे।</div>'+
     sec(1,'🔒 BOX 1 — Auto-fill fields (app भरता है)',box1,true)+
     sec(2,'✍️ BOX 2 — Notes fields (यही भरने हैं)',box2,true)+
@@ -8652,7 +8803,7 @@ function rvRenderFormulas(){
 
   document.getElementById('rv2formulaView').innerHTML=
    '<div class="rv2-card"><div class="rv2-card-body">'+
-   '<div class="rv2-sect-title">📐 Formula Bank — '+total+' formulas (question-wise)</div>'+
+   '<div class="rv2-sect-title">📐 '+currentSubjectName()+' Formula Bank — '+total+' formulas (question-wise)</div>'+
    '<div class="rv2-txt" style="margin-bottom:14px;">हर सवाल के <strong>Primary Formulas</strong> (Section 1) — question-wise। 📋 दबाकर copy करो।</div>'+
    (blocks||'<div class="rv2-empty">कोई formula नहीं मिला।</div>')+
    '</div></div>';
@@ -8676,12 +8827,12 @@ function rvRenderVideos(){
       '</div></div>';
   }).join('');
   document.getElementById('rv2videoView').innerHTML=
-   '<div class="rv2-card"><div class="rv2-card-body"><div class="rv2-sect-title">📺 Video Tutorials — '+total+' links</div>'+
+   '<div class="rv2-card"><div class="rv2-card-body"><div class="rv2-sect-title">📺 '+currentSubjectName()+' Video Tutorials — '+total+' links</div>'+
    '<div class="rv2-txt" style="margin-bottom:14px;">हर सवाल के chapter + topic + subtopic से बना relevant YouTube search link।</div>'+blocks+'</div></div>';
 }
 function rvRenderMistakes(){
   document.getElementById('rv2mistakeView').innerHTML=
-   '<div class="rv2-card"><div class="rv2-card-body"><div class="rv2-sect-title">⚠️ Common Mistakes &amp; SSC Traps</div>'+
+   '<div class="rv2-card"><div class="rv2-card-body"><div class="rv2-sect-title">⚠️ '+currentSubjectName()+' Mistakes &amp; SSC Traps</div>'+
    RV_QUESTIONS.map(q=>{const s=q.s4||{};return '<div class="rv2-question-card rv2-'+q.status+'" style="margin-bottom:12px;">'+
      '<div class="rv2-q-header" style="cursor:default;"><div class="rv2-q-number">Q'+q.no+': '+rvEsc(q.topic)+'</div>'+
      '<div class="rv2-q-badges"><span class="rv2-q-status rv2-diff">'+rvEsc(q.subtopic)+'</span>'+
@@ -8806,7 +8957,7 @@ function mzRenderLanding(){
     const year = m.year || (m.setup && m.setup.year) || '';
     const date = m.date || (m.setup && m.setup.date) || '';
     const rawShift = m.setup?.shift || m.shift || '';
-    const originalName = m.name || 'Quant Sectional Mock';
+    const originalName = m.name || (currentSubjectName()+' Sectional Mock');
     const shift = rawShift ? rawShift : (detectShift(originalName) || detectShift(m.name) || '');
     
     let fullTitle = [examName + (year ? ' ' + year : '')].filter(Boolean).join(' ');
@@ -8819,7 +8970,7 @@ function mzRenderLanding(){
       '<button class="start" onclick="mzOpenAnalysis('+i+',null,\'analysis\')">📊 Analysis</button>' : 
       '<button class="start" onclick="mzOpenInstructions('+i+')">▶ Start Mock</button>';
 
-    return '<article class="mz-card"><div class="mz-card-top"></div><div class="mz-card-main"><div class="mz-card-label"><span>QUANTITATIVE APTITUDE</span><b>'+escapeHtml(String(m.year||(m.setup&&m.setup.year)||'SSC'))+'</b></div>'+ 
+    return '<article class="mz-card"><div class="mz-card-top"></div><div class="mz-card-main"><div class="mz-card-label"><span>'+escapeHtml(currentSubjectName().toUpperCase())+'</span><b>'+escapeHtml(String(m.year||(m.setup&&m.setup.year)||'SSC'))+'</b></div>'+
       '<h3>'+escapeHtml(fullTitle)+'</h3>' +
       '<div class="mz-chip" style="display:inline-block; font-size:10px; background:rgba(99,102,241,0.1); color:#4f46e5; border-radius:12px; padding:2px 8px; margin-top:4px; margin-bottom:10px; font-weight:600;">'+escapeHtml(originalName)+'</div>' +
       '<div class="mz-card-meta"><div><b>'+shownQ+'</b><small>Questions</small></div><div><b>'+duration+' min</b><small>Duration</small></div><div><b>'+(qs.length?max.toFixed(max%1?1:0):'—')+'</b><small>Marks</small></div></div>'+ 
@@ -8831,7 +8982,7 @@ function mzSetYear(year){mzYearFilter=year;mzRenderLanding();}
 function mzOpenInstructions(index){
   const mock=S.mocks[index],qs=mzQuestionSet(mock);if(!mock||!qs.length){showToast('⚠️ Playable questions/options nahi mile');return;}
   mzSelectedIndex=index;const marks=mzMarks(mock),duration=parseInt((mock.setup||{}).totalTime||mock.totalTime)||15;
-  sv2('mzInstructionTitle',mock.name||'Quant Sectional Mock');sv2('mzInstQuestions',qs.length);sv2('mzInstDuration',duration+' min');sv2('mzInstMarks',(qs.length*marks.correct).toFixed((qs.length*marks.correct)%1?1:0));sv2('mzCorrectMarks',marks.correct);sv2('mzWrongMarks',marks.wrong);
+  sv2('mzInstructionTitle',mock.name||(currentSubjectName()+' Sectional Mock'));sv2('mzInstQuestions',qs.length);sv2('mzInstDuration',duration+' min');sv2('mzInstMarks',(qs.length*marks.correct).toFixed((qs.length*marks.correct)%1?1:0));sv2('mzCorrectMarks',marks.correct);sv2('mzWrongMarks',marks.wrong);
   const agree=g('mzAgree');if(agree)agree.checked=false;mzAgreeChanged();mzShow('instructions');
 }
 function mzAgreeChanged(){const b=g('mzStartBtn'),a=g('mzAgree');if(b)b.disabled=!(a&&a.checked);}
@@ -8851,7 +9002,7 @@ function mzCommitTime(){if(!mzState)return;const q=mzState.questions[mzState.cur
 function mzPaletteState(q){const a=mzState.answers[q.no],r=mzState.review[q.no],v=mzState.visited[q.no];return a&&r?'answered-marked':r?'marked':a?'answered':v?'not-answered':'not-visited';}
 function mzRenderExam(){
   const st=mzState;if(!st)return;const q=st.questions[st.current],selected=st.answers[q.no]||'';
-  sv2('mzExamName',st.mock.name||'Quant Sectional Mock');sv2('mzTimer',mzClock(st.remaining));sv2('mzQuestionNo','Question '+(st.current+1)+' of '+st.questions.length);sv2('mzQuestionMarks','+'+st.marks.correct+' · −'+st.marks.wrong);
+  sv2('mzExamName',st.mock.name||(currentSubjectName()+' Sectional Mock'));sv2('mzTimer',mzClock(st.remaining));sv2('mzQuestionNo','Question '+(st.current+1)+' of '+st.questions.length);sv2('mzQuestionMarks','+'+st.marks.correct+' · −'+st.marks.wrong);
   const qt=g('mzQuestionText');if(qt)qt.innerHTML=rvMath(q.text);
   const opts=g('mzOptions');if(opts)opts.innerHTML=q.options.map(o=>'<button class="mz-option '+(selected===o.k?'sel':'')+'" onclick="mzSelect(\''+o.k.replace(/'/g,'')+'\')"><span class="mz-opt-letter">'+escapeHtml(o.k)+'</span><span>'+rvMath(o.v)+'</span></button>').join('');
   const prev=g('mzPrevBtn');if(prev)prev.disabled=st.current===0;
@@ -8873,7 +9024,7 @@ function mzSubmitExam(auto){
   let correct=0,incorrect=0,unattempted=0;
   const questionResults=st.questions.map(q=>{const selected=st.answers[q.no]||'',status=!selected?'Unattempted':selected===q.correct?'Correct':'Incorrect';if(status==='Correct')correct++;else if(status==='Incorrect')incorrect++;else unattempted++;const time=parseInt(st.times[q.no])||0;return {qNo:q.no,status,selected,correctOpt:q.correct,questionText:q.text,options:q.options,category:q.category,chapter:q.chapter,topic:q.topic,subtopic:q.subtopic,difficultyLevel:q.difficulty,timeTaken:time,avgTime:q.avgTime,timeDelta:time-(parseInt(q.avgTime)||0),solution:q.solution,formula:q.formula,reviewed:!!st.review[q.no]};});
   const score=correct*st.marks.correct-incorrect*st.marks.wrong,maxScore=st.questions.length*st.marks.correct,accuracy=correct+incorrect?correct/(correct+incorrect)*100:0;
-  const attempt={id:String(Date.now())+'_'+Math.random().toString(36).slice(2,7),mockId:mzMockKey(st.mock,st.index),mockName:st.mock.name||'Quant Mock',date:new Date().toISOString(),correct,incorrect,unattempted,score,maxScore,total:st.questions.length,accuracy:parseFloat(accuracy.toFixed(1)),timeUsed:st.duration-st.remaining,duration:st.duration,answers:{...st.answers},questionResults};
+  const attempt={id:String(Date.now())+'_'+Math.random().toString(36).slice(2,7),mockId:mzMockKey(st.mock,st.index),mockName:st.mock.name||(currentSubjectName()+' Mock'),date:new Date().toISOString(),correct,incorrect,unattempted,score,maxScore,total:st.questions.length,accuracy:parseFloat(accuracy.toFixed(1)),timeUsed:st.duration-st.remaining,duration:st.duration,answers:{...st.answers},questionResults};
   if(!Array.isArray(S.mockAttempts))S.mockAttempts=[];S.mockAttempts.push(attempt);mzLastAttempt=attempt;const index=st.index;mzState=null;saveToStorage();mzRenderResult(index,attempt,auto);
 }
 function mzRenderResult(index,a,auto){
@@ -9007,7 +9158,7 @@ function mzOpenAnalysis(index,attemptId,initialTab){
       <button onclick="mzBackLanding()">← Mocks</button>
       <div>
         <small>ATTEMPT-SPECIFIC ANALYSIS</small>
-        <h2>${escapeHtml(mock.name||'Quant Mock')}</h2>
+        <h2>${escapeHtml(mock.name||(currentSubjectName()+' Mock'))}</h2>
         <small>${new Date(a.date).toLocaleString()}</small>
       </div>
       <button onclick="mzOpenInstructions(${index})">↻ Reattempt</button>
@@ -9118,11 +9269,11 @@ function rvToggleAll(){
 }
 function rvToggleDone(no,e){e.stopPropagation();
   rvRevised=rvRevised.includes(no)?rvRevised.filter(x=>x!==no):[...rvRevised,no];
-  rvStore.set('qmt_rev5_done',rvRevised);rvRefresh();
+  rvStore.set(rvSubjectKey('qmt_rev5_done'),rvRevised);rvRefresh();
   rvToast(rvRevised.includes(no)?'✔ Q'+no+' rvRevised!':'○ Q'+no+' pending');}
 function rvToggleStar(no,e){e.stopPropagation();
   rvStarred=rvStarred.includes(no)?rvStarred.filter(x=>x!==no):[...rvStarred,no];
-  rvStore.set('qmt_rev5_star',rvStarred);rvRefresh();
+  rvStore.set(rvSubjectKey('qmt_rev5_star'),rvStarred);rvRefresh();
   rvToast(rvStarred.includes(no)?'⭐ Q'+no+' rvStarred':'☆ Q'+no+' unstarred');}
 /* 🐞 FIX: clipboard API sandbox/http me fail hota hai — ab textarea fallback */
 function rvDoCopy(t){
@@ -9669,14 +9820,19 @@ else rvBindEvents();
    functions stay in their existing classic script scope. */
 window.QMT = {
   getState: () => S,
+  getSubject: () => typeof window.qmtSubjectName === 'function' ? window.qmtSubjectName() : 'Maths',
+  switchSubject: subject => window.QMTSubjects && window.QMTSubjects.switchTo(subject),
   refresh: () => {
-    if (typeof refreshCategoryFilter === 'function') refreshCategoryFilter();
-    if (typeof refreshChapterFilter === 'function') refreshChapterFilter();
-    if (typeof refreshReasonFilter === 'function') refreshReasonFilter();
-    if (typeof refreshTagFilter === 'function') refreshTagFilter();
-    if (typeof renderTable === 'function') renderTable();
-    if (typeof renderAnalytics === 'function') renderAnalytics();
-    if (typeof renderRevision === 'function') renderRevision();
+    if (typeof refreshSubjectUI === 'function') refreshSubjectUI(window.QMT.getSubject());
+    else {
+      if (typeof refreshCategoryFilter === 'function') refreshCategoryFilter();
+      if (typeof refreshChapterFilter === 'function') refreshChapterFilter();
+      if (typeof refreshReasonFilter === 'function') refreshReasonFilter();
+      if (typeof refreshTagFilter === 'function') refreshTagFilter();
+      if (typeof renderTable === 'function') renderTable();
+      if (typeof renderAnalytics === 'function') renderAnalytics();
+      if (typeof renderRevision === 'function') renderRevision();
+    }
     if (typeof saveToStorage === 'function') saveToStorage();
   },
   importQuestions: questions => {

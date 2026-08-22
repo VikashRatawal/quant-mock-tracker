@@ -1,4 +1,4 @@
-const CACHE_NAME = 'qmt-static-v4';
+const CACHE_NAME = 'qmt-static-v5';
 const STATIC_ASSETS = [
   './index.html',
   './manifest.webmanifest',
@@ -6,6 +6,8 @@ const STATIC_ASSETS = [
   './js/ai.js',
   './js/chat.js',
   './js/improvements.js',
+  './js/subject-engine.js',
+  './js/view-controls.js',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/maskable-512.png'

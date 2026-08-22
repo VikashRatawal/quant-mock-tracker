@@ -28,6 +28,10 @@ const EXTRA_PRESETS = [
 ];
 const PDFJS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
 
+function aiSubjectName() {
+  return typeof window.qmtSubjectName === 'function' ? window.qmtSubjectName() : 'Maths';
+}
+
 const AI = {
   settings: loadSettings(),
   preview: [],
@@ -477,6 +481,7 @@ function questionByNo(no) {
 
 function questionContext(question) {
   return JSON.stringify({
+    subject: aiSubjectName(),
     questionText: question?.notes || question?.questionText || '',
     options: question?.options || [],
     correctOpt: question?.correctOpt || '',
@@ -525,7 +530,7 @@ async function renderAIResponse(title, prompt, button) {
 }
 
 function analysisPrompt(question) {
-  return `You are a patient SSC Quant mentor. Reply in ${AI.settings.language}.
+  return `You are a patient SSC ${aiSubjectName()} mentor. Reply in ${AI.settings.language}.
 Analyze this incorrect question and provide exactly these headings:
 1. Probable mistake reason
 2. Concept weakness vs calculation error
@@ -539,7 +544,7 @@ ${questionContext(question)}`;
 }
 
 function askPrompt(question, preset) {
-  return `You are an SSC Quant tutor. Reply in ${AI.settings.language}. Keep the answer practical,
+  return `You are an SSC ${aiSubjectName()} tutor. Reply in ${AI.settings.language}. Keep the answer practical,
 clear and concise. The learner selected this request: "${preset}".
 IMPORTANT: Har formula LaTeX format me $...$ (inline) ya $$...$$ (block) delimiters me likho.
 Question data:
@@ -694,21 +699,23 @@ async function extractFile(file) {
 }
 
 function importPrompt(text) {
-  const chapterLists = window.CATEGORY_CHAPTERS || {
+  const chapterLists = window.qmtSubjectCategoryChapters || window.CATEGORY_CHAPTERS || {
     Arithmetic: ['Percentage', 'Profit & Loss', 'Time & Work', 'Ratio & Proportion', 'Average', 'Ages',
       'Time Speed Distance', 'Simple Interest', 'Compound Interest', 'Number System', 'HCF & LCM',
       'Mixture & Alligation', 'Partnership', 'Boats & Streams'],
     'Advanced Maths': ['Algebra', 'Geometry', 'Trigonometry', 'Mensuration', 'Coordinate Geometry',
       'Quadratic Equations', 'Linear Equation', 'Surds & Indices']
   };
-  const categoryText = JSON.stringify(chapterLists);
-  return `You extract SSC Quant questions from noisy Hindi/English OCR. Repair broken Hindi words and OCR
+  const activeCategories = typeof window.qmtSubjectCategories === 'function'
+    ? window.qmtSubjectCategories() : ['Arithmetic', 'Advanced Maths'];
+  const categoryText = JSON.stringify({ activeSubject: aiSubjectName(), categories: activeCategories, chapters: chapterLists });
+  return `You extract SSC ${aiSubjectName()} questions from noisy Hindi/English OCR. Repair broken Hindi words and OCR
 errors, but never guess an answer when the source is unclear. Use language preference ${AI.settings.language}.
 Return ONLY a valid JSON array, no markdown and no commentary. Every object must match this exact schema:
 {
  "no": 1,
  "status": "correct|incorrect|skipped",
- "category": "Arithmetic|Advanced Maths",
+ "category": "${activeCategories.join('|')}",
  "chapter": "one existing chapter/topic",
  "topic": "specific concept",
  "subtopic": "specific subtopic",
@@ -849,7 +856,7 @@ async function createStudyPlan(event) {
   if (!key) return;
   setBusy(button, true);
   try {
-    const prompt = `You are an SSC Quant study coach. Reply in ${AI.settings.language}.
+    const prompt = `You are an SSC ${aiSubjectName()} study coach. Reply in ${AI.settings.language}.
 Create a personalized plan from this analytics JSON. Use exactly these headings:
 ## Aaj ke weak topics
 ## Questions to revise
@@ -882,7 +889,7 @@ function findVideos(no, button) {
   const question = questionByNo(no);
   if (!question) return;
   const concept = [question.chapter, question.topic, question.subtopic].filter(Boolean).join(' ');
-  const query = (concept ? concept + ' ' : '') + 'SSC Quant concept tricks';
+  const query = (concept ? concept + ' ' : '') + 'SSC ' + aiSubjectName() + ' concept tricks';
   const url = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query);
   try {
     window.open(url, '_blank', 'noopener');
@@ -985,6 +992,16 @@ function observeDynamicViews() {
   addQuestionButtons();
 }
 
+function resetAIImportForSubject() {
+  const file = document.getElementById('aiImportFile');
+  const preview = document.getElementById('aiImportPreview');
+  const status = document.getElementById('aiImportStatus');
+  if (file) file.value = '';
+  if (preview) preview.classList.add('hidden');
+  if (status) status.textContent = '';
+  AI.preview = [];
+}
+
 function initAI() {
   addSettingsCard();
   addSmartImportCard();
@@ -992,6 +1009,7 @@ function initAI() {
   bindActions();
   observeDynamicViews();
   window.addEventListener('qmt-auth-state', event => handleAuthState(event.detail));
+  window.addEventListener('qmt-subject-change', resetAIImportForSubject);
   handleAuthState(window.firebaseUser);
 }
 
